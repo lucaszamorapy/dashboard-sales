@@ -1,6 +1,6 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import { sequelizeDb } from "../../config";
+import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { IClient } from "../../types";
+import { Order } from "../orders";
 
 // Crie uma interface para os valores opcionais, já que o Sequelize lida com inserções de forma especial
 interface IClientCreationAttributes extends Optional<IClient, 'client_id'> { }
@@ -19,63 +19,70 @@ export class Client extends Model<IClient, IClientCreationAttributes> implements
   public regadh?: Date;
   public regausu?: number;
 
-
-}
-
-export default Client.init(
-  {
-    client_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      unique: true,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    cep: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    street: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    neighborhood: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    tel: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    cel: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    regidh: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    regiusu: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    regadh: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    regausu: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-  },
-  {
-    sequelize: sequelizeDb, // Sua instância do Sequelize
-    tableName: "clients",
-    timestamps: false,
+  static associate() {
+    Client.hasMany(Order, {
+      foreignKey: 'client_id',
+      as: 'orders',
+    });
   }
-);
+  static initModel(sequelize: Sequelize) {
+    Client.init(
+      {
+        client_id: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
+          unique: true,
+        },
+        name: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+        cep: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+        street: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+        neighborhood: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+        tel: {
+          type: DataTypes.STRING,
+          allowNull: true,
+        },
+        cel: {
+          type: DataTypes.STRING,
+          allowNull: true,
+        },
+        regidh: {
+          type: DataTypes.DATE,
+          allowNull: false,
+        },
+        regiusu: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+        },
+        regadh: {
+          type: DataTypes.DATE,
+          allowNull: true,
+        },
+        regausu: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+        },
+      },
+      {
+        sequelize: sequelize, // Sua instância do Sequelize
+        tableName: "clients",
+        timestamps: false,
+      }
+    );
+
+  }
+}
 

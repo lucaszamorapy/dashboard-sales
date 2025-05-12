@@ -1,10 +1,8 @@
 import { Message } from "../../class/message";
 import bcrypt from "bcrypt"
-import User from "../../models/users";
 import jwt from "jsonwebtoken"
 import { IUser } from "../../types";
-
-
+import { User } from "../../models/users";
 
 interface IUserLogin {
   name: string;
