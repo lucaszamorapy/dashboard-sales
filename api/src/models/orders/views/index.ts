@@ -1,42 +1,55 @@
 import { DataTypes, Model, Optional } from "sequelize";
-import { sequelizeDb } from "../../config";
-import { IUser } from "../../types";
+import { IVwOrder, PaymentMethod } from "../../../types";
+import { sequelizeDb } from "../../../config";
 
 // Crie uma interface para os valores opcionais, já que o Sequelize lida com inserções de forma especial
-interface IUserCreationAttributes extends Optional<IUser, 'user_id'> { }
 
 // Defina o modelo User, agora com tipagem correta, não precisam ser explicitamente definidas dentro do constructor porque o Sequelize cuida dessa parte para você quando você cria ou recupera registros do banco de dados.
-export class User extends Model<IUser, IUserCreationAttributes> implements IUser {
-  public user_id?: number;
-  public name!: string;
-  public email!: string;
-  public password!: string;
+export class VwOrder extends Model<IVwOrder> implements IVwOrder {
+  public order_id!: number;
+  public client_name!: string;
+  public product_name!: string;
+  public quantity!: number;
+  public payment_method!: PaymentMethod;
+  public delivry_date!: Date;
+  public total!: number;
   public regidh!: Date;
   public regiusu!: number;
   public regadh?: Date;
   public regausu?: number;
 }
 
-export default User.init(
+export default VwOrder.init(
   {
-    user_id: {
+    order_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       unique: true,
     },
-    name: {
+    client_name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    email: {
+    product_name: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
-    password: {
-      type: DataTypes.STRING,
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    payment_method: {
+      type: DataTypes.ENUM(...Object.values(PaymentMethod)),
+      allowNull: false,
+    },
+    delivry_date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    total: {
+      type: DataTypes.NUMBER,
       allowNull: false,
     },
     regidh: {
@@ -58,7 +71,7 @@ export default User.init(
   },
   {
     sequelize: sequelizeDb, // Sua instância do Sequelize
-    tableName: "users",
+    tableName: "vworders",
     timestamps: false,
   }
 );

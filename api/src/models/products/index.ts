@@ -1,25 +1,24 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelizeDb } from "../../config";
-import { IUser } from "../../types";
+import { IProduct } from "../../types";
 
 // Crie uma interface para os valores opcionais, já que o Sequelize lida com inserções de forma especial
-interface IUserCreationAttributes extends Optional<IUser, 'user_id'> { }
+interface IProductCreationAttributes extends Optional<IProduct, 'product_id'> { }
 
 // Defina o modelo User, agora com tipagem correta, não precisam ser explicitamente definidas dentro do constructor porque o Sequelize cuida dessa parte para você quando você cria ou recupera registros do banco de dados.
-export class User extends Model<IUser, IUserCreationAttributes> implements IUser {
-  public user_id?: number;
+export class Product extends Model<IProduct, IProductCreationAttributes> implements IProduct {
+  public product_id?: number;
   public name!: string;
-  public email!: string;
-  public password!: string;
+  public price!: number;
   public regidh!: Date;
   public regiusu!: number;
   public regadh?: Date;
   public regausu?: number;
 }
 
-export default User.init(
+export default Product.init(
   {
-    user_id: {
+    product_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
@@ -30,13 +29,8 @@ export default User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: DataTypes.STRING,
+    price: {
+      type: DataTypes.NUMBER,
       allowNull: false,
     },
     regidh: {
@@ -58,7 +52,7 @@ export default User.init(
   },
   {
     sequelize: sequelizeDb, // Sua instância do Sequelize
-    tableName: "users",
+    tableName: "products",
     timestamps: false,
   }
 );

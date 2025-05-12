@@ -1,25 +1,30 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelizeDb } from "../../config";
-import { IUser } from "../../types";
+import { IClient } from "../../types";
 
 // Crie uma interface para os valores opcionais, já que o Sequelize lida com inserções de forma especial
-interface IUserCreationAttributes extends Optional<IUser, 'user_id'> { }
+interface IClientCreationAttributes extends Optional<IClient, 'client_id'> { }
 
 // Defina o modelo User, agora com tipagem correta, não precisam ser explicitamente definidas dentro do constructor porque o Sequelize cuida dessa parte para você quando você cria ou recupera registros do banco de dados.
-export class User extends Model<IUser, IUserCreationAttributes> implements IUser {
-  public user_id?: number;
+export class Client extends Model<IClient, IClientCreationAttributes> implements IClient {
+  public client_id?: number;
   public name!: string;
-  public email!: string;
-  public password!: string;
+  public cep!: string;
+  public street!: string;
+  public neighborhood!: string;
+  public tel?: string;
+  public cel?: string;
   public regidh!: Date;
   public regiusu!: number;
   public regadh?: Date;
   public regausu?: number;
+
+
 }
 
-export default User.init(
+export default Client.init(
   {
-    user_id: {
+    client_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
@@ -30,14 +35,25 @@ export default User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    email: {
+    cep: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
-    password: {
+    street: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    neighborhood: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    tel: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    cel: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     regidh: {
       type: DataTypes.DATE,
@@ -58,7 +74,7 @@ export default User.init(
   },
   {
     sequelize: sequelizeDb, // Sua instância do Sequelize
-    tableName: "users",
+    tableName: "clients",
     timestamps: false,
   }
 );

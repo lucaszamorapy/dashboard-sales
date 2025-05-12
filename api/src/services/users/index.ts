@@ -2,18 +2,9 @@ import { Message } from "../../class/message";
 import bcrypt from "bcrypt"
 import User from "../../models/users";
 import jwt from "jsonwebtoken"
-import { Op } from "sequelize";
+import { IUser } from "../../types";
 
-export interface IUser {
-  user_id?: number;
-  name: string;
-  email: string;
-  password: string;
-  regidh: Date;
-  regiusu: number;
-  regadh?: Date;
-  regausu?: number;
-}
+
 
 interface IUserLogin {
   name: string;
