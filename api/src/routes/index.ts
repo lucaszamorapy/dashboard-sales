@@ -8,11 +8,11 @@ export const router = express.Router()
 
 //user
 router.post("/user", verifyToken, createUserController)
-router.put("/user", alterUserController)
+router.put("/user", verifyToken, alterUserController)
 router.post("/user/login", loginController)
 
 //clients
 router.get("/clients", verifyToken, getAllClientsController)
-router.get("/clients/:id", getClientController)
-router.post("/clients", createClientController)
-router.put("/clients", updateClientController)
+router.get("/clients/:id", verifyToken, getClientController)
+router.post("/clients", verifyToken, createClientController)
+router.put("/clients", verifyToken, updateClientController)

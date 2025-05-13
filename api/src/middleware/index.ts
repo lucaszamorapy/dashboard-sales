@@ -2,7 +2,7 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken"
 
 //verificação de token nas requisão
-interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Request {
   userId?: number;
 }
 
@@ -26,3 +26,21 @@ export const verifyToken = (
     res.status(401).json({ error: 'Token inválido' });
   }
 };
+
+export const addRegis = (req: AuthenticatedRequest, type: string) => {
+  let body;
+  if (type === 'post') {
+    body = {
+      ...req.body,
+      regiusu: req.userId,
+      regidh: new Date()
+    }
+  } else {
+    body = {
+      ...req.body,
+      regausu: req.userId,
+      regadh: new Date()
+    }
+  }
+  return body
+}
