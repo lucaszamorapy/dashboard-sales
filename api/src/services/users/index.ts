@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 import { IUser } from "../../types";
 import { User } from "../../models/users";
 
+
 interface IUserLogin {
   name: string;
   password: string
@@ -54,17 +55,27 @@ export const login = async (data: IUserLogin) => {
     if (!isValidPassword) {
       throw new Error("Senha inválida.");
     }
+    const secretKey = process.env.JWT_KEY;
+
+    if (!secretKey) {
+      throw new Error("JWT_KEY não está definida nas variáveis.");
+    }
 
     const token = jwt.sign(
       {
         user_id: existUser.user_id,
         email: existUser.email,
       },
-      "YOUR_SECRET_KEY",
+      secretKey,
       { expiresIn: "1h" }
     );
+
     return new Message(token, `Bem-vindo, ${data.name}`);
   } catch (error: any) {
     throw new Error(error.message);
   }
 };
+
+
+
+
