@@ -13,3 +13,7 @@ npx sequelize-cli migration:generate --name create-tabela-exemplo
 # Execute o comando para aplicar as migrações
 
 npx sequelize-cli db:migrate
+
+# Observações da API
+
+- No router ele exige que as funções de controller ou middlewares não podem retornar nada.
