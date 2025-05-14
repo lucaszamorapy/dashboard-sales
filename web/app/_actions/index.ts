@@ -11,10 +11,11 @@ export const api = axios.create({
 interface Payload {
   url: string;
   content?: object | any
+  message: boolean
   messageSuccess?: string;
   messageError?: string;
-}
 
+}
 
 export class ApiRequisition {
   private requestPayload?: Payload;
@@ -30,10 +31,14 @@ export class ApiRequisition {
     }
     try {
       const response = await api.get(this.requestPayload.url);
-      return response.data
-    } catch (error) {
+      return response.data.result
+    } catch (error: any) {
       console.error(error);
-      toast.error(this.requestPayload.messageError);
+      if (this.requestPayload.messageError) {
+        toast.error(this.requestPayload.messageError);
+      } else {
+        toast.error(error.response.data.error);
+      }
     }
   }
 
@@ -43,11 +48,19 @@ export class ApiRequisition {
     }
     try {
       const response = await api.post(this.requestPayload.url, this.requestPayload.content);
-      toast.success(this.requestPayload.messageSuccess);
-      return response.data
-    } catch (error) {
+      if (this.requestPayload.message && this.requestPayload.messageSuccess) {
+        toast.success(this.requestPayload.messageSuccess);
+      } else if (this.requestPayload.message && !this.requestPayload.messageSuccess) {
+        toast.success(response.data.message);
+      }
+      return response.data.result
+    } catch (error: any) {
       console.error(error);
-      toast.error(this.requestPayload.messageError);
+      if (this.requestPayload.messageError) {
+        toast.error(this.requestPayload.messageError);
+      } else {
+        toast.error(error.response.data.error);
+      }
     }
   }
 
@@ -57,11 +70,19 @@ export class ApiRequisition {
     }
     try {
       const response = await api.put(this.requestPayload.url, this.requestPayload.content);
-      toast.success(this.requestPayload.messageSuccess);
-      return response.data
-    } catch (error) {
+      if (this.requestPayload.messageSuccess) {
+        toast.success(this.requestPayload.messageSuccess);
+      } else {
+        toast.success(response.data.message);
+      }
+      return response.data.result
+    } catch (error: any) {
       console.error(error);
-      toast.error(this.requestPayload.messageError);
+      if (this.requestPayload.messageError) {
+        toast.error(this.requestPayload.messageError);
+      } else {
+        toast.error(error.response.data.error);
+      }
     }
   }
 
@@ -71,11 +92,19 @@ export class ApiRequisition {
     }
     try {
       const response = await api.delete(this.requestPayload.url);
-      toast.success(this.requestPayload.messageSuccess);
-      return response.data
-    } catch (error) {
+      if (this.requestPayload.messageSuccess) {
+        toast.success(this.requestPayload.messageSuccess);
+      } else {
+        toast.success(response.data.message);
+      }
+      return response.data.result
+    } catch (error: any) {
       console.error(error);
-      toast.error(this.requestPayload.messageError);
+      if (this.requestPayload.messageError) {
+        toast.error(this.requestPayload.messageError);
+      } else {
+        toast.error(error.response.data.error);
+      }
     }
   }
 

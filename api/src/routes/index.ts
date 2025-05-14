@@ -1,5 +1,5 @@
 import express from 'express'
-import { alterUserController, createUserController, loginController } from '../controllers/users'
+import { alterUserController, createUserController, loginController, validTokenController } from '../controllers/users'
 import { createClientController, getAllClientsController, getClientController, updateClientController } from '../controllers/clients'
 import { verifyToken } from '../middleware'
 import { createProductController, getAllProductsController, getProductController, updateProductController } from '../controllers/products'
@@ -10,8 +10,9 @@ export const router = express.Router()
 
 //user
 router.post("/user", verifyToken, createUserController)
-router.put("/user", verifyToken, alterUserController)
 router.post("/user/login", loginController)
+router.post("/user/token", validTokenController)
+router.put("/user", verifyToken, alterUserController)
 
 //clients
 router.get("/clients", verifyToken, getAllClientsController)

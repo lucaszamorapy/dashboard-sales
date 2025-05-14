@@ -1,14 +1,14 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/app/lib/utils";
+import { Button } from "@/app/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/app/components/ui/card";
 import {
   Form,
   FormControl,
@@ -16,15 +16,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/app/components/ui/form";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
 import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { login } from "@/app/_actions/users";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/auth-context";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Por favor, preencha o seu usuário." }),
@@ -39,6 +41,8 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const [view, setView] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const { setAuth } = useAuth();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,16 +54,18 @@ export function LoginForm({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
-    await login(values);
-    // setAuth({
-    //   username: data.user.userName,
-    //   token: data.token,
-    //   id: data.user.id,
-    // });
-
-    // localStorage.setItem("token", data.token);
-    // localStorage.setItem("username", data.user.userName);
-    // localStorage.setItem("userId", data.user.id);
+    const data = await login(values);
+    setAuth({
+      name: data.name,
+      token: data.token,
+      user_id: data.user_id,
+    });
+    if (data) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("name", data.name);
+      localStorage.setItem("user_id", data.user_id);
+      router.push("/");
+    }
     setLoading(false);
   };
 

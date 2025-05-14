@@ -79,6 +79,15 @@ export const login = async (data: IUserLogin) => {
   }
 };
 
+export const validToken = (data: any) => {
+  try {
+    jwt.verify(data.token, process.env.JWT_KEY as string);
+    return new Message({ valid: true }, "Token válido");
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
 
 
 
