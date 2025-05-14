@@ -35,8 +35,8 @@ export interface IProduct {
 
 export enum PaymentMethod {
   Dinheiro = 'Dinheiro',
-  Pix = 'pix',
-  Cartão = 'cartão',
+  Pix = 'Pix',
+  Cartão = 'Cartão',
 }
 
 export interface IOrder {
@@ -45,7 +45,8 @@ export interface IOrder {
   product_id: number;
   quantity: number;
   payment_method: PaymentMethod;
-  delivry_date: Date;
+  delivery_date: Date;
+  delivery_time?: string;
   total: number;
   regidh: Date;
   regiusu: number;
@@ -54,15 +55,21 @@ export interface IOrder {
 }
 
 export interface IVwOrder {
-  order_id: number;
+  order_id?: number;
   client_name: string;
   product_name: string;
   quantity: number;
   payment_method: PaymentMethod;
-  delivry_date: Date;
+  delivery_date: Date;
+  delivery_time?: string;
   total: number;
   regidh: Date;
   regiusu: number;
   regadh?: Date;
   regausu?: number;
+}
+
+export interface IFilterOrder {
+  init_date?: Date;
+  final_date?: Date
 }

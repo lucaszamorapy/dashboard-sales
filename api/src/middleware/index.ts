@@ -29,17 +29,23 @@ export const verifyToken = (
 
 export const addRegis = (req: AuthenticatedRequest, type: string) => {
   let body;
+  const localNow = new Date();
+  // Subtrai 3 horas para ajustar ao horário de Brasília (UTC-3)
+  const brasiliaTime = new Date(localNow.getTime() - (3 * 60 * 60 * 1000));  // 3 horas a menos
+  // Se precisar do formato ISO, use o método toISOString()
+  const brasiliaISOString = brasiliaTime.toISOString();  // Exemplo de formato ISO
+
   if (type === 'post') {
     body = {
       ...req.body,
       regiusu: req.userId,
-      regidh: new Date()
+      regidh: brasiliaISOString
     }
   } else {
     body = {
       ...req.body,
       regausu: req.userId,
-      regadh: new Date()
+      regadh: brasiliaISOString
     }
   }
   return body

@@ -1,16 +1,17 @@
-import { DataTypes, Model, Optional, Sequelize } from "sequelize";
+import { DataTypes, Model, Sequelize } from "sequelize";
 import { IVwOrder, PaymentMethod } from "../../../types";
 
 // Crie uma interface para os valores opcionais, já que o Sequelize lida com inserções de forma especial
 
 // Defina o modelo User, agora com tipagem correta, não precisam ser explicitamente definidas dentro do constructor porque o Sequelize cuida dessa parte para você quando você cria ou recupera registros do banco de dados.
 export class VwOrder extends Model<IVwOrder> implements IVwOrder {
-  public order_id!: number;
+  public order_id?: number;
   public client_name!: string;
   public product_name!: string;
   public quantity!: number;
   public payment_method!: PaymentMethod;
-  public delivry_date!: Date;
+  public delivery_date!: Date;
+  public delivery_time?: string;
   public total!: number;
   public regidh!: Date;
   public regiusu!: number;
@@ -43,8 +44,12 @@ export class VwOrder extends Model<IVwOrder> implements IVwOrder {
           type: DataTypes.ENUM(...Object.values(PaymentMethod)),
           allowNull: false,
         },
-        delivry_date: {
+        delivery_date: {
           type: DataTypes.DATE,
+          allowNull: false,
+        },
+        delivery_time: {
+          type: DataTypes.STRING,
           allowNull: false,
         },
         total: {

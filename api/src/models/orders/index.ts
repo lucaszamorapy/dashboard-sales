@@ -8,12 +8,13 @@ interface IOrderCreationAttributes extends Optional<IOrder, 'order_id'> { }
 
 // Defina o modelo User, agora com tipagem correta, não precisam ser explicitamente definidas dentro do constructor porque o Sequelize cuida dessa parte para você quando você cria ou recupera registros do banco de dados.
 export class Order extends Model<IOrder, IOrderCreationAttributes> implements IOrder {
-  public order_id!: number;
+  public order_id?: number;
   public client_id!: number;
   public product_id!: number;
   public quantity!: number;
   public payment_method!: PaymentMethod;
-  public delivry_date!: Date;
+  public delivery_date!: Date;
+  public delivery_time?: string;
   public total!: number;
   public regidh!: Date;
   public regiusu!: number;
@@ -57,9 +58,13 @@ export class Order extends Model<IOrder, IOrderCreationAttributes> implements IO
           type: DataTypes.ENUM(...Object.values(PaymentMethod)),
           allowNull: false,
         },
-        delivry_date: {
+        delivery_date: {
           type: DataTypes.DATE,
           allowNull: false,
+        },
+        delivery_time: {
+          type: DataTypes.STRING,
+          allowNull: true,
         },
         total: {
           type: DataTypes.NUMBER,
