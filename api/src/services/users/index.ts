@@ -70,7 +70,10 @@ export const login = async (data: IUserLogin) => {
       { expiresIn: "1h" }
     );
 
-    return new Message(token, `Bem-vindo, ${data.name}`);
+    return new Message({
+      token: token, user_id: existUser.user_id,
+      name: existUser.name,
+    }, `Bem-vindo, ${data.name}`);
   } catch (error: any) {
     throw new Error(error.message);
   }
