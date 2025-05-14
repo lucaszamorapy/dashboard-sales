@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
 import https from "https";
 import { toast } from "sonner";
 
@@ -7,6 +7,31 @@ export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_APP_URL,
   httpsAgent: new https.Agent({ rejectUnauthorized: false }), // Apenas para DEV!
 });
+
+api.interceptors.request.use(
+  (config) => {
+    config.headers = new AxiosHeaders({
+      ...config.headers,
+      ...mountHeader(),
+    });
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+const mountHeader = (headersOptions: Record<string, string> = {}) => {
+  const token = localStorage.token;
+
+  const headers = {
+    ...headersOptions,
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
+};
 
 interface Payload {
   url: string;

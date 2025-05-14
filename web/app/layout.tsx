@@ -4,13 +4,9 @@ import "./globals.css";
 import { Toaster } from "@/app/components/ui/sonner";
 import RouteGuard from "./components/route-guard";
 import { AuthProvider } from "./contexts/auth-context";
-//import { validToken } from "./_actions/users";
+import ClientLayout from "./components/client-layout";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -23,9 +19,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="pt-BR">
       <body
@@ -34,7 +30,7 @@ export default function RootLayout({
         <Toaster />
         <AuthProvider>
           <RouteGuard />
-          {children}
+          <ClientLayout>{children}</ClientLayout>
         </AuthProvider>
       </body>
     </html>
