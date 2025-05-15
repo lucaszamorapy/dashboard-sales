@@ -61,6 +61,8 @@ const UpsertProduct = ({ product }: UpsertProductProps) => {
     await upsertProduct(productUpsert);
     const response = await getAllProducts();
     setData(response);
+    setIsOpen(false);
+    form.reset();
     setLoading(false);
   };
 

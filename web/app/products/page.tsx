@@ -24,7 +24,7 @@ const Products = () => {
       {data && (
         <div className="flex flex-col gap-10">
           <UpsertProduct />
-          <DataTable columns={columns} data={data} />
+          <DataTable columns={columns} data={data} columnFilter="name" />
         </div>
       )}
     </div>
