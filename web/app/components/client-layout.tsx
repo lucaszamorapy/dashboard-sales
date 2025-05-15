@@ -22,7 +22,7 @@ export default function ClientLayout({
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader path={pathname} />
-        {children}
+        <div className="w-full">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

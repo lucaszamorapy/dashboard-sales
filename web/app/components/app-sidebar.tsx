@@ -29,6 +29,11 @@ const data = {
       icon: House,
     },
     {
+      title: "Pedidos",
+      url: "/orders",
+      icon: NotebookPen,
+    },
+    {
       title: "Clientes",
       url: "/clients",
       icon: Users,
@@ -37,11 +42,6 @@ const data = {
       title: "Produtos",
       url: "/products",
       icon: Store,
-    },
-    {
-      title: "Pedidos",
-      url: "/orders",
-      icon: NotebookPen,
     },
   ],
 };

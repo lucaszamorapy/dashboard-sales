@@ -20,9 +20,9 @@ const Products = () => {
   }, [getProducts]);
 
   return (
-    <div className="container px-6 mt-6">
+    <div className="@container/main flex flex-1 flex-col p-6 gap-2">
       {data && (
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-5">
           <UpsertProduct />
           <DataTable columns={columns} data={data} columnFilter="name" />
         </div>
