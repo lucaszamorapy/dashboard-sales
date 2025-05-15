@@ -22,7 +22,7 @@ import { IProduct } from "@/app/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { Loader2, PencilIcon, PlusCircle } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -41,7 +41,6 @@ const UpsertProduct = ({ product }: UpsertProductProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const { setData } = useData();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: product ?? {
@@ -49,6 +48,17 @@ const UpsertProduct = ({ product }: UpsertProductProps) => {
       price: 0,
     },
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      form.reset(
+        product ?? {
+          name: "",
+          price: 0,
+        }
+      );
+    }
+  }, [isOpen, form, product]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setLoading(true);
@@ -62,7 +72,12 @@ const UpsertProduct = ({ product }: UpsertProductProps) => {
     const response = await getAllProducts();
     setData(response);
     setIsOpen(false);
-    form.reset();
+    form.reset(
+      product ?? {
+        name: "",
+        price: 0,
+      }
+    );
     setLoading(false);
   };
 

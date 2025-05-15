@@ -17,17 +17,17 @@ export const upsertClient = async (client: IClient) => {
   let response;
   if (client.client_id) {
     response = await req.setPayload({
-      url: "/products",
+      url: "/clients",
       content: client,
       message: true,
-      messageError: "Ocorreu um erro ao alterar o produto"
+      messageError: "Ocorreu um erro ao alterar o cliente"
     }).put();
   } else {
     response = await req.setPayload({
-      url: "/products",
+      url: "/clients",
       content: client,
       message: true,
-      messageError: "Ocorreu um erro ao cadastrar o produto"
+      messageError: "Ocorreu um erro ao cadastrar o cliente"
     }).post();
   }
   return response;

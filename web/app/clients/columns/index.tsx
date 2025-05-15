@@ -10,13 +10,16 @@ export const columns: ColumnDef<IClient>[] = [
     header: ({ column }) => {
       return (
         <div
-          className="flex items-center cursor-pointer"
+          className="flex px-6 items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           ID
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </div>
       );
+    },
+    cell: ({ row: { original: client } }) => {
+      return <div className="px-6">{client.client_id}</div>;
     },
   },
   {

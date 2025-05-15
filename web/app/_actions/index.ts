@@ -55,8 +55,8 @@ export class ApiRequisition {
       throw new Error("Payload não foi definido.");
     }
     try {
-      const response = await api.get(this.requestPayload.url);
-      return response.data.result
+      const { data } = await api.get(this.requestPayload.url);
+      return data.result
     } catch (error: any) {
       console.error(error);
       if (this.requestPayload.messageError) {
@@ -72,13 +72,13 @@ export class ApiRequisition {
       throw new Error("Payload não foi definido.");
     }
     try {
-      const response = await api.post(this.requestPayload.url, this.requestPayload.content);
+      const { data } = await api.post(this.requestPayload.url, this.requestPayload.content);
       if (this.requestPayload.message && this.requestPayload.messageSuccess) {
         toast.success(this.requestPayload.messageSuccess);
       } else if (this.requestPayload.message && !this.requestPayload.messageSuccess) {
-        toast.success(response.data.message);
+        toast.success(data.message);
       }
-      return response.data.result
+      return data.result
     } catch (error: any) {
       console.error(error);
       if (this.requestPayload.messageError) {
@@ -94,13 +94,13 @@ export class ApiRequisition {
       throw new Error("Payload não foi definido.");
     }
     try {
-      const response = await api.put(this.requestPayload.url, this.requestPayload.content);
+      const { data } = await api.put(this.requestPayload.url, this.requestPayload.content);
       if (this.requestPayload.messageSuccess) {
         toast.success(this.requestPayload.messageSuccess);
       } else {
-        toast.success(response.data.message);
+        toast.success(data.message);
       }
-      return response.data.result
+      return data.result
     } catch (error: any) {
       console.error(error);
       if (this.requestPayload.messageError) {
@@ -116,13 +116,13 @@ export class ApiRequisition {
       throw new Error("Payload não foi definido.");
     }
     try {
-      const response = await api.delete(this.requestPayload.url);
+      const { data } = await api.delete(this.requestPayload.url);
       if (this.requestPayload.messageSuccess) {
         toast.success(this.requestPayload.messageSuccess);
       } else {
-        toast.success(response.data.message);
+        toast.success(data.message);
       }
-      return response.data.result
+      return data.result
     } catch (error: any) {
       console.error(error);
       if (this.requestPayload.messageError) {

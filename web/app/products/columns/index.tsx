@@ -10,13 +10,16 @@ export const columns: ColumnDef<IProduct>[] = [
     header: ({ column }) => {
       return (
         <div
-          className="flex items-center cursor-pointer"
+          className="flex items-center px-6 cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           ID
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </div>
       );
+    },
+    cell: ({ row: { original: product } }) => {
+      return <div className="px-6">{product.product_id}</div>;
     },
   },
   {

@@ -21,8 +21,8 @@ export interface IClient {
   neighborhood: string;
   tel?: string;
   cel?: string;
-  regidh: Date;
-  regiusu: number;
+  regidh?: Date;
+  regiusu?: number;
   regadh?: Date;
   regausu?: number;
 }
