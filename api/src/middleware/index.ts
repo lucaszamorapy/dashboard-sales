@@ -12,12 +12,10 @@ export const verifyToken = (
   next: NextFunction
 ): void => {
   const token = req.headers['authorization']?.split(' ')[1];
-
   if (!token) {
     res.status(403).json({ error: 'Token não fornecido' });
     return;
   }
-
   try {
     const decoded: any = jwt.verify(token, process.env.JWT_KEY as string);
     (req as AuthenticatedRequest).userId = decoded.user_id;
@@ -30,10 +28,8 @@ export const verifyToken = (
 export const addRegis = (req: AuthenticatedRequest, type: string) => {
   let body;
   const localNow = new Date();
-  // Subtrai 3 horas para ajustar ao horário de Brasília (UTC-3)
-  const brasiliaTime = new Date(localNow.getTime() - (3 * 60 * 60 * 1000));  // 3 horas a menos
-  // Se precisar do formato ISO, use o método toISOString()
-  const brasiliaISOString = brasiliaTime.toISOString();  // Exemplo de formato ISO
+  const brasiliaTime = new Date(localNow.getTime() - (3 * 60 * 60 * 1000));
+  const brasiliaISOString = brasiliaTime.toISOString();
 
   if (type === 'post') {
     body = {

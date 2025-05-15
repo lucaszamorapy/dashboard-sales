@@ -28,7 +28,6 @@ export const loginController = async (req: AuthenticatedRequest, res: Response):
   try {
     const response = await login(req.body)
     res.status(200).json(response);
-
   } catch (error: any) {
     const message = error.message.replace(/^Error:\s*/, "");
     res.status(400).json({ error: message });

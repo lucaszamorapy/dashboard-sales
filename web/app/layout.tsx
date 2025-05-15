@@ -5,6 +5,7 @@ import { Toaster } from "@/app/components/ui/sonner";
 import RouteGuard from "./components/route-guard";
 import { AuthProvider } from "./contexts/auth-context";
 import ClientLayout from "./components/client-layout";
+import { DataProvider } from "./contexts/data-context";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({
@@ -29,8 +30,10 @@ export default function RootLayout({
       >
         <Toaster />
         <AuthProvider>
-          <RouteGuard />
-          <ClientLayout>{children}</ClientLayout>
+          <DataProvider>
+            <RouteGuard />
+            <ClientLayout>{children}</ClientLayout>
+          </DataProvider>
         </AuthProvider>
       </body>
     </html>

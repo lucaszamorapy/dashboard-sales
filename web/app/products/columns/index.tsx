@@ -1,5 +1,6 @@
 import { IProduct } from "@/app/types";
 import { ColumnDef } from "@tanstack/react-table";
+import UpsertProduct from "../components/upsert-product";
 
 //colunas do datatable
 export const columns: ColumnDef<IProduct>[] = [
@@ -25,12 +26,7 @@ export const columns: ColumnDef<IProduct>[] = [
     accessorKey: "actions",
     header: "Ações",
     cell: ({ row: { original: product } }) => {
-      return (
-        <div className="flex">
-          {/* <EditProductButton product={product} />
-          <DeleteProductButton productId={product.product_id} /> */}
-        </div>
-      );
+      return <div className="flex">{<UpsertProduct product={product} />}</div>;
     },
   },
 ];

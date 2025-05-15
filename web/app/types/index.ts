@@ -7,8 +7,8 @@ export interface IProduct {
   product_id?: number;
   name: string;
   price: number;
-  regidh: Date;
-  regiusu: number;
+  regidh?: Date;
+  regiusu?: number;
   regadh?: Date;
   regausu?: number;
 }
