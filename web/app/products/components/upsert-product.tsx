@@ -62,22 +62,27 @@ const UpsertProduct = ({ product }: UpsertProductProps) => {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setLoading(true);
-    let productUpsert = {} as IProduct;
-    if (product?.product_id) {
-      productUpsert = { product_id: product.product_id, ...data };
-    } else {
-      productUpsert = data;
-    }
-    await upsertProduct(productUpsert);
-    const response = await getAllProducts();
-    setData(response);
-    setIsOpen(false);
-    form.reset(
-      product ?? {
-        name: "",
-        price: 0,
+    try {
+      let productUpsert = {} as IProduct;
+      if (product?.product_id) {
+        productUpsert = { product_id: product.product_id, ...data };
+      } else {
+        productUpsert = data;
       }
-    );
+      await upsertProduct(productUpsert);
+      const response = await getAllProducts();
+      setData(response);
+      setIsOpen(false);
+      form.reset(
+        product ?? {
+          name: "",
+          price: 0,
+        }
+      );
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
     setLoading(false);
   };
 

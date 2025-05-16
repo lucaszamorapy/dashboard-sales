@@ -15,7 +15,7 @@ export const getAllOrders = async () => {
         {
           model: OrderProducts,
           as: "order_products",
-          attributes: { exclude: ['product_id', 'regidh', 'regiusu', 'regadh', 'regausu'] },
+          attributes: { exclude: ['client_id, product_id', 'regidh', 'regiusu', 'regadh', 'regausu'] },
           include: [
             {
               model: Product,
@@ -27,7 +27,7 @@ export const getAllOrders = async () => {
         {
           model: Client,
           as: "client",
-          attributes: { exclude: ['cep', 'regidh', 'regiusu', 'regadh', 'regausu'] },
+          attributes: { exclude: ['client_id', 'cep', 'regidh', 'regiusu', 'regadh', 'regausu'] },
         },
       ],
     })
@@ -57,7 +57,7 @@ export const getOrder = async (id: number) => {
         {
           model: Client,
           as: "client",
-          attributes: { exclude: ['cep', 'regidh', 'regiusu', 'regadh', 'regausu'] },
+          attributes: { exclude: ['client_id', 'cep', 'regidh', 'regiusu', 'regadh', 'regausu'] },
         },
       ],
     })
@@ -102,7 +102,7 @@ export const filterOrder = async (data: IFilterOrder) => {
         {
           model: Client,
           as: "client",
-          attributes: { exclude: ['cep', 'regidh', 'regiusu', 'regadh', 'regausu'] },
+          attributes: { exclude: ['client_id', 'cep', 'regidh', 'regiusu', 'regadh', 'regausu'] },
         },
       ]
     });

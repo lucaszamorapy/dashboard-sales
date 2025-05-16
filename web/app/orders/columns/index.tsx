@@ -1,10 +1,11 @@
-import { IVwOrder } from "@/app/types";
+import PaymentMethodBadge from "@/app/components/payment-method-badge";
+import { IOrder } from "@/app/types";
 import { formatDate } from "@/utils/functions";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import React from "react";
 
-export const columns: ColumnDef<IVwOrder>[] = [
+export const columns: ColumnDef<IOrder>[] = [
   {
     accessorKey: "order_id",
     header: ({ column }) => {
@@ -23,30 +24,37 @@ export const columns: ColumnDef<IVwOrder>[] = [
     },
   },
   {
-    accessorKey: "product_name",
+    accessorKey: "product",
     header: ({ column }) => {
       return (
         <div
           className="w-20 flex items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Produto
+          Produtos
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </div>
       );
     },
     cell: ({ row: { original: order } }) => {
       return (
-        <div className="flex w-[50px] flex-col">
-          <span>{order.product_name}</span>
-          <span>{order.quantity} unidades</span>
+        <div className="flex w-[150px] flex-col">
+          {order.order_products.map((item) => (
+            <div key={item.product.name}>
+              <div className="flex gap-2">
+                <span>{item.product.name}</span>
+                <span>({item.quantity} Uni.)</span>
+              </div>
+            </div>
+          ))}
         </div>
       );
     },
   },
 
   {
-    accessorKey: "client_name",
+    accessorFn: (row) => row.client.name,
+    id: "client_name", // você precisa de um ID se usar `accessorFn`
     header: ({ column }) => {
       return (
         <div
@@ -61,8 +69,8 @@ export const columns: ColumnDef<IVwOrder>[] = [
     cell: ({ row: { original: order } }) => {
       return (
         <div className="flex flex-col">
-          <span>{order.client_name}</span>
-          <span>{order.payment_method}</span>
+          <span>{order.client.name}</span>
+          <PaymentMethodBadge method={order.payment_method} />
         </div>
       );
     },
@@ -77,7 +85,7 @@ export const columns: ColumnDef<IVwOrder>[] = [
             {formatDate(order.delivery_date)} às {order.delivery_time}
           </span>
           <span className="flex">
-            {order.client_street}, {order.client_neighborhood}
+            {order.client.street}, {order.client.neighborhood}
           </span>
         </div>
       );

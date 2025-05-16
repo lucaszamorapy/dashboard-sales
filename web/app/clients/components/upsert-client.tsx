@@ -82,26 +82,31 @@ const UpsertClient = ({ client }: UpsertClientProps) => {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setLoading(true);
-    let clientUpsert = {} as IClient;
-    if (client?.client_id) {
-      clientUpsert = { client_id: client.client_id, ...data };
-    } else {
-      clientUpsert = data;
-    }
-    await upsertClient(clientUpsert);
-    const response = await getAllClients();
-    setData(response);
-    setIsOpen(false);
-    form.reset(
-      client ?? {
-        name: "",
-        cep: "",
-        street: "",
-        neighborhood: "",
-        tel: "",
-        cel: "",
+    try {
+      let clientUpsert = {} as IClient;
+      if (client?.client_id) {
+        clientUpsert = { client_id: client.client_id, ...data };
+      } else {
+        clientUpsert = data;
       }
-    );
+      await upsertClient(clientUpsert);
+      const response = await getAllClients();
+      setData(response);
+      setIsOpen(false);
+      form.reset(
+        client ?? {
+          name: "",
+          cep: "",
+          street: "",
+          neighborhood: "",
+          tel: "",
+          cel: "",
+        }
+      );
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
     setLoading(false);
   };
 

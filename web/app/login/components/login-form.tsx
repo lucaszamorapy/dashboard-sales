@@ -53,17 +53,22 @@ export function LoginForm({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
-    const data = await login(values);
-    setAuth({
-      name: data.name,
-      token: data.token,
-      user_id: data.user_id,
-    });
-    if (data) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("name", data.name);
-      localStorage.setItem("user_id", data.user_id);
-      router.push("/");
+    try {
+      const data = await login(values);
+      if (data) {
+        setAuth({
+          name: data.name,
+          token: data.token,
+          user_id: data.user_id,
+        });
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("name", data.name);
+        localStorage.setItem("user_id", data.user_id);
+        router.push("/");
+      }
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
     }
     setLoading(false);
   };
