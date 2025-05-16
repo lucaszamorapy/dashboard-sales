@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { IProduct } from "../../types";
 import { Order } from "../orders";
+import { OrderProducts } from "../orderProducts";
 
 // Crie uma interface para os valores opcionais, já que o Sequelize lida com inserções de forma especial
 interface IProductCreationAttributes extends Optional<IProduct, 'product_id'> { }
@@ -17,9 +18,16 @@ export class Product extends Model<IProduct, IProductCreationAttributes> impleme
 
   static associate() {
     // Um cliente pode ter muitos pedidos
-    Product.hasMany(Order, {
+    Product.hasMany(OrderProducts, {
       foreignKey: 'product_id',
-      as: 'orders',
+      as: 'order_products_for_product',
+    });
+
+    Product.belongsToMany(Order, {
+      through: OrderProducts,
+      foreignKey: "product_id",
+      otherKey: "order_id",
+      as: "orders", // outro alias único
     });
   }
   static initModel(sequelize: Sequelize) {

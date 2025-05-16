@@ -4,7 +4,7 @@ import { Order } from '../models/orders';
 import { Client } from '../models/clients';
 import { Product } from '../models/products';
 import { User } from '../models/users';
-import { VwOrder } from '../models/orders/views';
+import { OrderProducts } from '../models/orderProducts';
 
 dotenv.config()
 
@@ -20,9 +20,10 @@ Order.initModel(sequelizeDb)
 Client.initModel(sequelizeDb)
 Product.initModel(sequelizeDb)
 User.initModel(sequelizeDb)
-VwOrder.initModel(sequelizeDb)
+OrderProducts.initModel(sequelizeDb)
 
 // Associa os relacionamentos (chama associate)
 Order.associate();
 Client.associate();
 Product.associate();
+OrderProducts.associate()

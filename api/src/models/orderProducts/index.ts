@@ -1,59 +1,54 @@
-import { DataTypes, Model, Sequelize } from "sequelize";
-import { IVwOrder, PaymentMethod } from "../../../types";
+import { DataTypes, Model, Optional, Sequelize } from "sequelize";
+import { IOrder, IOrderProduct, PaymentMethod } from "../../types";
+import { Client } from "../clients";
+import { Product } from "../products";
+import { Order } from "../orders";
 
 // Crie uma interface para os valores opcionais, já que o Sequelize lida com inserções de forma especial
+interface IOrderCreationAttributes extends Optional<IOrderProduct, 'order_product_id'> { }
 
 // Defina o modelo User, agora com tipagem correta, não precisam ser explicitamente definidas dentro do constructor porque o Sequelize cuida dessa parte para você quando você cria ou recupera registros do banco de dados.
-export class VwOrder extends Model<IVwOrder> implements IVwOrder {
-  public order_id?: number;
-  public client_name!: string;
-  public product_name!: string;
+export class OrderProducts extends Model<IOrderProduct, IOrderCreationAttributes> implements IOrderProduct {
+  public order_product_id?: number;
+  public order_id!: number;
+  public product_id!: number;
   public quantity!: number;
-  public payment_method!: PaymentMethod;
-  public delivery_date!: Date;
-  public delivery_time?: string;
-  public total!: number;
   public regidh!: Date;
   public regiusu!: number;
   public regadh?: Date;
   public regausu?: number;
 
+  static associate() {
+    OrderProducts.belongsTo(Order, {
+      foreignKey: "order_id",
+      as: 'order',
+    });
+    OrderProducts.belongsTo(Product, {
+      foreignKey: "product_id",
+      as: 'product',
+    });
+  }
+
   static initModel(sequelize: Sequelize) {
-    VwOrder.init(
+    OrderProducts.init(
       {
-        order_id: {
+        order_product_id: {
           type: DataTypes.INTEGER,
           allowNull: false,
           autoIncrement: true,
           primaryKey: true,
           unique: true,
         },
-        client_name: {
-          type: DataTypes.STRING,
+        order_id: {
+          type: DataTypes.INTEGER,
           allowNull: false,
         },
-        product_name: {
-          type: DataTypes.STRING,
+        product_id: {
+          type: DataTypes.INTEGER,
           allowNull: false,
         },
         quantity: {
           type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-        payment_method: {
-          type: DataTypes.ENUM(...Object.values(PaymentMethod)),
-          allowNull: false,
-        },
-        delivery_date: {
-          type: DataTypes.DATE,
-          allowNull: false,
-        },
-        delivery_time: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
-        total: {
-          type: DataTypes.NUMBER,
           allowNull: false,
         },
         regidh: {
@@ -75,7 +70,7 @@ export class VwOrder extends Model<IVwOrder> implements IVwOrder {
       },
       {
         sequelize: sequelize, // Sua instância do Sequelize
-        tableName: "vworders",
+        tableName: "order_products",
         timestamps: false,
       }
     );

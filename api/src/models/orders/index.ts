@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { IOrder, PaymentMethod } from "../../types";
 import { Client } from "../clients";
+import { OrderProducts } from "../orderProducts";
 import { Product } from "../products";
 
 // Crie uma interface para os valores opcionais, já que o Sequelize lida com inserções de forma especial
@@ -10,8 +11,6 @@ interface IOrderCreationAttributes extends Optional<IOrder, 'order_id'> { }
 export class Order extends Model<IOrder, IOrderCreationAttributes> implements IOrder {
   public order_id?: number;
   public client_id!: number;
-  public product_id!: number;
-  public quantity!: number;
   public payment_method!: PaymentMethod;
   public delivery_date!: Date;
   public delivery_time?: string;
@@ -27,10 +26,18 @@ export class Order extends Model<IOrder, IOrderCreationAttributes> implements IO
       as: "client",
     });
 
-    Order.belongsTo(Product, {
-      foreignKey: "product_id",
-      as: "product",
+    Order.hasMany(OrderProducts, {
+      foreignKey: "order_id",
+      as: "order_products",
     });
+
+    Order.belongsToMany(Product, {
+      through: OrderProducts,
+      foreignKey: "order_id",
+      otherKey: "product_id",
+      as: "products",
+    });
+
   }
   static initModel(sequelize: Sequelize) {
     Order.init(
@@ -43,14 +50,6 @@ export class Order extends Model<IOrder, IOrderCreationAttributes> implements IO
           unique: true,
         },
         client_id: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-        product_id: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-        quantity: {
           type: DataTypes.INTEGER,
           allowNull: false,
         },
@@ -69,6 +68,10 @@ export class Order extends Model<IOrder, IOrderCreationAttributes> implements IO
         total: {
           type: DataTypes.NUMBER,
           allowNull: false,
+        },
+        obs: {
+          type: DataTypes.STRING,
+          allowNull: true,
         },
         regidh: {
           type: DataTypes.DATE,

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { toast } from "sonner";
+import moment from 'moment';
 
 export const getCep = async (cep: string) => {
   try {
@@ -9,4 +10,8 @@ export const getCep = async (cep: string) => {
     console.log(error)
     toast.error("Erro ao obter dados do Via CEP")
   }
+}
+
+export const formatDate = (value: Date) => {
+  return moment(value).format('DD/MM/yyyy')
 }

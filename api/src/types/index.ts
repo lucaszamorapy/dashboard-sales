@@ -42,27 +42,22 @@ export enum PaymentMethod {
 export interface IOrder {
   order_id?: number;
   client_id: number;
-  product_id: number;
-  quantity: number;
   payment_method: PaymentMethod;
   delivery_date: Date;
   delivery_time?: string;
   total: number;
+  obs?: string;
   regidh: Date;
   regiusu: number;
   regadh?: Date;
   regausu?: number;
 }
 
-export interface IVwOrder {
+export interface IOrderProduct {
+  order_product_id?: number;
   order_id?: number;
-  client_name: string;
-  product_name: string;
+  product_id: number;
   quantity: number;
-  payment_method: PaymentMethod;
-  delivery_date: Date;
-  delivery_time?: string;
-  total: number;
   regidh: Date;
   regiusu: number;
   regadh?: Date;

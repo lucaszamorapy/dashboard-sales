@@ -1,13 +1,36 @@
 import { Op } from "sequelize";
 import { Message } from "../../class/message";
 import { Order } from "../../models/orders";
-import { VwOrder } from "../../models/orders/views";
 import { IFilterOrder, IOrder } from "../../types";
-
+import { OrderProducts } from "../../models/orderProducts";
+import { Product } from "../../models/products";
+import { Client } from "../../models/clients";
 
 export const getAllOrders = async () => {
+  //as model sao como propriedades do objeto, por exemplo OrderProducts: {}
+  //os alias tem que seguir na ordem, por exemplo order_products vem de Order, enquanto product vem do OrderProducts
   try {
-    const orders = await VwOrder.findAll()
+    const orders = await Order.findAll({
+      include: [
+        {
+          model: OrderProducts,
+          as: "order_products",
+          attributes: { exclude: ['product_id', 'regidh', 'regiusu', 'regadh', 'regausu'] },
+          include: [
+            {
+              model: Product,
+              as: "product",
+              attributes: { exclude: ['regidh', 'regiusu', 'regadh', 'regausu'] },
+            }
+          ],
+        },
+        {
+          model: Client,
+          as: "client",
+          attributes: { exclude: ['cep', 'regidh', 'regiusu', 'regadh', 'regausu'] },
+        },
+      ],
+    })
     return new Message(orders, `Total de ${orders.length} pedido(s) encontrado(s)`);
   } catch (error: any) {
     throw new Error(error.message);
@@ -16,8 +39,29 @@ export const getAllOrders = async () => {
 
 export const getOrder = async (id: number) => {
   try {
-    const order = await VwOrder.findOne({ where: { order_id: id } })
-    return new Message(order, `Pedido do cliente ${order?.client_name} encontrado`);
+    const order = await Order.findOne({
+      where: { order_id: id },
+      include: [
+        {
+          model: OrderProducts,
+          as: "order_products",
+          attributes: { exclude: ['product_id', 'regidh', 'regiusu', 'regadh', 'regausu'] },
+          include: [
+            {
+              model: Product,
+              as: "product",
+              attributes: { exclude: ['regidh', 'regiusu', 'regadh', 'regausu'] },
+            }
+          ],
+        },
+        {
+          model: Client,
+          as: "client",
+          attributes: { exclude: ['cep', 'regidh', 'regiusu', 'regadh', 'regausu'] },
+        },
+      ],
+    })
+    return new Message(order, `Pedido do cliente encontrado`);
   } catch (error: any) {
     throw new Error(error.message);
   }
@@ -40,15 +84,33 @@ export const filterOrder = async (data: IFilterOrder) => {
     } else if (data.final_date) {
       where.delivery_date = { [Op.lte]: final };
     }
-    return await VwOrder.findAll({
-      where // equivale a: where: { delivery_date: ... }
+    return await Order.findAll({
+      where,
+      include: [
+        {
+          model: OrderProducts,
+          as: "order_products",
+          attributes: { exclude: ['product_id', 'regidh', 'regiusu', 'regadh', 'regausu'] },
+          include: [
+            {
+              model: Product,
+              as: "product",
+              attributes: { exclude: ['regidh', 'regiusu', 'regadh', 'regausu'] },
+            }
+          ],
+        },
+        {
+          model: Client,
+          as: "client",
+          attributes: { exclude: ['cep', 'regidh', 'regiusu', 'regadh', 'regausu'] },
+        },
+      ]
     });
   }
   catch (error: any) {
     throw new Error(error.message);
   }
 }
-
 export const createOrder = async (data: IOrder) => {
   try {
     const order = await Order.create(data)
