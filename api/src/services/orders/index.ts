@@ -9,6 +9,7 @@ import { Client } from "../../models/clients";
 export const getAllOrders = async () => {
   //as model sao como propriedades do objeto, por exemplo OrderProducts: {}
   //os alias tem que seguir na ordem, por exemplo order_products vem de Order, enquanto product vem do OrderProducts
+  //depois de varios estudos e pesquisas, o melhor mesmo é toda vez que for fazer um include, seja um relacionamento ou varios use []
   try {
     const orders = await Order.findAll({
       include: [

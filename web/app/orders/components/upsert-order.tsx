@@ -1,0 +1,539 @@
+import { getAllClients } from "@/app/_actions/clients";
+import { getAllProducts } from "@/app/_actions/products";
+import FormatInput from "@/app/components/format-input";
+import { MoneyInput } from "@/app/components/money-input";
+import { Button } from "@/app/components/ui/button";
+import { Card } from "@/app/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/app/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/app/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
+import { useData } from "@/app/contexts/data-context";
+import { IClient, IOrder, IOrderProduct, IProduct } from "@/app/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  CalendarIcon,
+  CircleMinus,
+  Loader2,
+  PencilIcon,
+  PlusCircle,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { z } from "zod";
+import { paymentMethods, transformedDefaultValues } from "../constants";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/app/components/ui/popover";
+import { cn } from "@/app/lib/utils";
+import { format } from "date-fns";
+import { Calendar } from "@/app/components/ui/calendar";
+import { ptBR } from "date-fns/locale";
+import { ScrollArea } from "@/app/components/ui/scroll-area";
+import { Textarea } from "@/app/components/ui/textarea";
+import {
+  getAllOrders,
+  upsertOrderProducts,
+  upsertOrders,
+} from "@/app/_actions/orders/indext";
+
+interface UpsertOrderProps {
+  order?: IOrder;
+}
+
+const formSchema = z.object({
+  client_id: z.number().min(1, { message: "O cliente é obrigatório" }),
+  order_products: z.array(
+    z.object({
+      order_product_id: z.number().optional(),
+      order_id: z.number().optional(),
+      product_id: z.number(),
+      quantity: z.number(),
+      product: z
+        .object({
+          product_id: z.number(),
+          name: z.string(),
+          price: z.number(),
+        })
+        .nullable(),
+    })
+  ),
+  total: z.number(),
+  payment_method: z.string(),
+  delivery_date: z.date(),
+  delivery_time: z.string().nullable(),
+  obs: z.string().nullable(),
+});
+
+const UpsertOrder = ({ order }: UpsertOrderProps) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [calculated, setCalculated] = useState<boolean>(false);
+  const [clients, setClients] = useState<IClient[]>([]);
+  const [products, setProducts] = useState<IProduct[]>([]);
+  const [product, setProduct] = useState({} as IProduct);
+  const hasLoaded = useRef(false);
+  const { setData } = useData();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: transformedDefaultValues(order, product),
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "order_products",
+  });
+
+  // const orderProducts = useWatch({
+  //   control: form.control,
+  //   name: "order_products",
+  // });
+
+  const totalValue = () => {
+    const updatedProducts = form.getValues("order_products");
+    const total = updatedProducts.reduce((acc, item) => {
+      const price = item.product?.price ?? 0;
+      return acc + price * item.quantity;
+    }, 0);
+    form.setValue("total", total);
+    setCalculated(true);
+  };
+
+  const removeProduct = (index: number) => {
+    remove(index);
+    setTimeout(() => {
+      totalValue();
+    }, 0);
+  };
+
+  const addProduct = () => {
+    append({
+      product_id: product.product_id ?? 1,
+      quantity: 1,
+      product: {
+        product_id: product.product_id ?? 1,
+        name: product.name,
+        price: product.price,
+      },
+    });
+    setTimeout(() => {
+      totalValue();
+    }, 0);
+  };
+
+  useEffect(() => {
+    if (!isOpen || hasLoaded.current) return;
+    hasLoaded.current = true;
+    const loadData = async () => {
+      setCalculated(false);
+      const [clientsData, productsData] = await Promise.all([
+        getAllClients(),
+        getAllProducts(),
+      ]);
+      const productFind = productsData.find(
+        (item: IProduct) => item.product_id === 1
+      );
+      form.reset(
+        transformedDefaultValues(order ? order : ({} as IOrder), productFind)
+      );
+      setProduct(productFind);
+      setClients(clientsData);
+      setProducts(productsData);
+    };
+    loadData();
+  }, [isOpen, order, product, form]);
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    setLoading(true);
+    try {
+      let orderUpsert = {
+        client_id: data?.client_id,
+        payment_method: data?.payment_method,
+        delivery_date: data?.delivery_date,
+        delivery_time: data?.delivery_time,
+        total: data?.total,
+        obs: data?.obs,
+      } as IOrder;
+      if (order?.order_id) {
+        orderUpsert = { ...orderUpsert, order_id: order.order_id };
+      }
+      const responseOrder = await upsertOrders(orderUpsert);
+      for (const item of data.order_products) {
+        let orderProductUpsert = {
+          order_id: responseOrder.order_id,
+          product_id: item.product_id,
+          quantity: item.quantity,
+        } as IOrderProduct;
+        if (order?.order_id) {
+          orderProductUpsert = {
+            ...orderProductUpsert,
+            order_product_id: item.order_product_id,
+          };
+        }
+        await upsertOrderProducts(orderProductUpsert);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    const response = await getAllOrders();
+    setData(response);
+    setIsOpen(false);
+    form.reset(transformedDefaultValues(order, product));
+    setLoading(false);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      {order ? (
+        <DialogTrigger asChild>
+          <PencilIcon size={16} className="text-primary cursor-pointer" />
+        </DialogTrigger>
+      ) : (
+        <div className="flex justify-end">
+          <DialogTrigger asChild>
+            <Button className="bg-primary text-white w-40">
+              <PlusCircle />
+              Adicionar Pedido
+            </Button>
+          </DialogTrigger>
+        </div>
+      )}
+
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{order ? "Edite" : "Adicione"} o Pedido</DialogTitle>
+          <DialogDescription>
+            Preencha as informações adequeadas do novo cliente.
+          </DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[600px] w-full rounded-md border p-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="client_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cliente</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      defaultValue={String(field.value)}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Selecione o Cliente" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectGroup>
+                          {clients.map((item) => {
+                            return (
+                              <SelectItem
+                                key={item.client_id}
+                                value={String(item.client_id)}
+                              >
+                                {item.name}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {fields.map((field, index) => (
+                <Card key={field.id} className="flex px-5 w-full  gap-5">
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      title="Adicionar produto"
+                      type="button"
+                      size={"sm"}
+                      onClick={addProduct}
+                    >
+                      <PlusCircle />
+                    </Button>
+                    {index > 0 ? (
+                      <Button
+                        type="button"
+                        onClick={() => removeProduct(index)}
+                        title="Remover produto"
+                        size={"sm"}
+                      >
+                        <CircleMinus />
+                      </Button>
+                    ) : null}
+                  </div>
+                  <div className="flex w-full flex-col gap-2">
+                    <div className="flex w-full items-center gap-2">
+                      <div className="w-full">
+                        <FormField
+                          control={form.control}
+                          name={`order_products.${index}.product_id`}
+                          render={({ field }) => (
+                            <FormItem className="w-full">
+                              <FormLabel>Produto</FormLabel>
+                              <FormControl>
+                                <Select
+                                  onValueChange={(value) => {
+                                    const productId = Number(value);
+                                    field.onChange(productId);
+
+                                    const selectedProduct = products.find(
+                                      (p) => p.product_id === productId
+                                    );
+                                    if (selectedProduct) {
+                                      form.setValue(
+                                        `order_products.${index}.product`,
+                                        {
+                                          product_id:
+                                            selectedProduct.product_id ?? 1,
+                                          name: selectedProduct.name,
+                                          price: selectedProduct.price,
+                                        }
+                                      );
+                                      totalValue();
+                                    }
+                                  }}
+                                  value={String(field.value)}
+                                >
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Selecione um produto" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {products.map((product) => (
+                                      <SelectItem
+                                        key={product.product_id}
+                                        value={String(product.product_id)}
+                                      >
+                                        {product.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <FormField
+                        control={form.control}
+                        name={`order_products.${index}.product.price`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Preço</FormLabel>
+                            <FormControl>
+                              <MoneyInput
+                                placeholder="Digite o preço"
+                                value={field.value}
+                                onValueChange={({ floatValue }) => {
+                                  field.onChange(floatValue);
+                                }}
+                                onBlur={field.onBlur}
+                                disabled={true}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`order_products.${index}.quantity`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Quantidade</FormLabel>
+                            <FormControl>
+                              <FormatInput
+                                placeholder="Digite a quantidade"
+                                type="onlyNumber"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                </Card>
+              ))}
+              <div className="flex items-center w-full gap-2">
+                <FormField
+                  control={form.control}
+                  name="payment_method"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Método de Pagamento</FormLabel>
+                      <FormControl>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Selecione um produto" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {paymentMethods.map((item, index) => (
+                              <SelectItem key={index} value={item}>
+                                {item}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="total"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Total</FormLabel>
+                      <FormControl>
+                        <MoneyInput placeholder="Valor total" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex w-full gap-2">
+                <FormField
+                  control={form.control}
+                  name="delivery_date"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Data de Entrega</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl className="w-full">
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP", { locale: ptBR })
+                              ) : (
+                                <span>Selecione uma data</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={
+                              field.value ? new Date(field.value) : undefined
+                            }
+                            onSelect={(date) => field.onChange(date)}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="delivery_time"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Horário</FormLabel>
+                      <FormControl>
+                        <FormatInput
+                          type="time"
+                          placeholder="Horário"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="obs"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Observações</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        value={field.value ?? ""}
+                        placeholder="Observações"
+                        className="resize-none"
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        disabled={field.disabled}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end">
+                {loading ? (
+                  <Button className="text-white" disabled>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Cadastrando
+                  </Button>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button type="button" onClick={totalValue}>
+                      Calcular
+                    </Button>
+                    <Button
+                      disabled={!calculated}
+                      className="text-white"
+                      type="submit"
+                    >
+                      {order ? "Atualizar" : "Cadastrar"}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </form>
+          </Form>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default UpsertOrder;

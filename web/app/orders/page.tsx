@@ -5,6 +5,7 @@ import { useData } from "../contexts/data-context";
 import { DataTable } from "../components/ui/data-table";
 import { getAllOrders } from "../_actions/orders/indext";
 import { columns } from "./columns";
+import UpsertOrder from "./components/upsert-order";
 
 const Orders = () => {
   const { data, setData } = useData();
@@ -22,6 +23,7 @@ const Orders = () => {
     <div className="@container/main flex flex-1 flex-col p-6 gap-2">
       {data && (
         <div className="flex flex-col gap-5">
+          <UpsertOrder />
           <DataTable columns={columns} data={data} columnFilter="client_name" />
         </div>
       )}

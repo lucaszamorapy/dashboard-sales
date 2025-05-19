@@ -27,24 +27,19 @@ export interface IClient {
   regausu?: number;
 }
 
-export enum PaymentMethod {
-  Dinheiro = 'Dinheiro',
-  Pix = 'Pix',
-  Cartão = 'Cartão',
-}
-
 
 export interface IOrder {
   order_id?: number;
   client_id: number;
-  order_products: IOrderProduct[];
-  client: Omit<IClient, 'client_id' | 'cep' | 'regidh' | 'regiusu' | 'regadh' | 'regausu'>;
-  payment_method: PaymentMethod;
+  order_products?: IOrderProduct[];
+  client?: Omit<IClient, 'client_id' | 'cep' | 'regidh' | 'regiusu' | 'regadh' | 'regausu'>;
+  payment_method: string;
   delivery_date: Date;
-  delivery_time?: string;
+  delivery_time?: string | null;
   total: number;
-  regidh: Date;
-  regiusu: number;
+  obs: string | null;
+  regidh?: Date;
+  regiusu?: number;
   regadh?: Date;
   regausu?: number;
 }
@@ -52,8 +47,9 @@ export interface IOrder {
 
 
 export interface IOrderProduct {
-  order_product: number;
+  order_product_id?: number;
   order_id: number;
   quantity: number;
-  product: Omit<IProduct, 'regidh' | 'regiusu' | 'regadh' | 'regausu'>
+  product_id: number;
+  product?: Omit<IProduct, 'regidh' | 'regiusu' | 'regadh' | 'regausu'>
 }

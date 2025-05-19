@@ -13,8 +13,15 @@ export const getAllProducts = async () => {
   return response;
 };
 
+export const getProduct = async (id: number) => {
+  const response = await req.setPayload({
+    url: `/products/${id}`,
+    message: true,
+  }).get();
+  return response;
+};
+
 export const upsertProduct = async (product: IProduct) => {
-  console.log(product)
   let response;
   if (product.product_id) {
     response = await req.setPayload({

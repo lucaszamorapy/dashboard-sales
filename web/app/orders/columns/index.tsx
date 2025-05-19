@@ -4,6 +4,7 @@ import { formatDate } from "@/utils/functions";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import React from "react";
+import UpsertOrder from "../components/upsert-order";
 
 export const columns: ColumnDef<IOrder>[] = [
   {
@@ -39,21 +40,22 @@ export const columns: ColumnDef<IOrder>[] = [
     cell: ({ row: { original: order } }) => {
       return (
         <div className="flex w-[150px] flex-col">
-          {order.order_products.map((item) => (
-            <div key={item.product.name}>
-              <div className="flex gap-2">
-                <span>{item.product.name}</span>
-                <span>({item.quantity} Uni.)</span>
+          {order.order_products &&
+            order.order_products.map((item, index) => (
+              <div key={index}>
+                <div className="flex gap-2">
+                  <span>{item.product?.name}</span>
+                  <span>({item.quantity} Uni.)</span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       );
     },
   },
 
   {
-    accessorFn: (row) => row.client.name,
+    accessorFn: (row) => row.client?.name,
     id: "client_name", // você precisa de um ID se usar `accessorFn`
     header: ({ column }) => {
       return (
@@ -69,8 +71,12 @@ export const columns: ColumnDef<IOrder>[] = [
     cell: ({ row: { original: order } }) => {
       return (
         <div className="flex flex-col">
-          <span>{order.client.name}</span>
-          <PaymentMethodBadge method={order.payment_method} />
+          {order && order.client && (
+            <>
+              <span>{order.client.name}</span>
+              <PaymentMethodBadge method={order.payment_method} />
+            </>
+          )}
         </div>
       );
     },
@@ -81,12 +87,16 @@ export const columns: ColumnDef<IOrder>[] = [
     cell: ({ row: { original: order } }) => {
       return (
         <div className="flex flex-col">
-          <span className="flex">
-            {formatDate(order.delivery_date)} às {order.delivery_time}
-          </span>
-          <span className="flex">
-            {order.client.street}, {order.client.neighborhood}
-          </span>
+          {order && order.client && (
+            <>
+              <span className="flex">
+                {formatDate(order.delivery_date)} às {order.delivery_time}
+              </span>
+              <span className="flex">
+                {order.client.street}, {order.client.neighborhood}
+              </span>
+            </>
+          )}
         </div>
       );
     },
@@ -107,8 +117,7 @@ export const columns: ColumnDef<IOrder>[] = [
     cell: ({ row: { original: order } }) => {
       return (
         <div className="">
-          {order.order_id}
-          {/* <UpsertProduct product={product} /> */}
+          <UpsertOrder order={order} />
         </div>
       );
     },

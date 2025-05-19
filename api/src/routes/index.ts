@@ -35,5 +35,5 @@ router.post("/orders/filter", verifyToken, filterOrderController)
 router.put("/orders", verifyToken, updateOrderController)
 
 //orderProducts
-router.post("/orderProducts/filter", verifyToken, createOrderProductController)
+router.post("/orderProducts", verifyToken, createOrderProductController)
 router.put("/orderProducts", verifyToken, updateOrderProductController)
