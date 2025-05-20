@@ -3,9 +3,10 @@ import { IOrder, IProduct } from "@/app/types";
 
 export const paymentMethods = ["Cartão", "Dinheiro", "Pix"]
 
-export const transformedDefaultValues = (order: IOrder | any, product: IProduct) => {
+export const transformedDefaultValues = (order?: IOrder | any, product?: IProduct) => {
+  let defaultValues = {}
   if (order && order.order_products) {
-    return {
+    defaultValues = {
       client_id: order.client_id,
       order_products: order.order_products.map((op: any) => ({
         order_product_id: op.order_product_id,
@@ -23,21 +24,21 @@ export const transformedDefaultValues = (order: IOrder | any, product: IProduct)
       delivery_time: order.delivery_time ?? "",
       obs: order.obs ?? null,
     };
+  } else {
+    defaultValues = {
+      order_products: [
+        {
+          product_id: product?.product_id,
+          quantity: 1,
+          product: product,
+        },
+      ],
+      total: 0,
+      payment_method: "Pix",
+      delivery_date: new Date(),
+      delivery_time: "",
+      obs: null,
+    }
   }
-
-  return {
-    client_id: -1,
-    order_products: [
-      {
-        product_id: product.product_id,
-        quantity: 1,
-        product: product,
-      },
-    ],
-    total: 0,
-    payment_method: "Pix",
-    delivery_date: new Date(),
-    delivery_time: "",
-    obs: null,
-  };
+  return defaultValues
 }

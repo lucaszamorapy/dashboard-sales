@@ -38,7 +38,7 @@ import {
   PencilIcon,
   PlusCircle,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { paymentMethods, transformedDefaultValues } from "../constants";
@@ -94,23 +94,17 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
   const [clients, setClients] = useState<IClient[]>([]);
   const [products, setProducts] = useState<IProduct[]>([]);
   const [product, setProduct] = useState({} as IProduct);
-  const hasLoaded = useRef(false);
   const { setData } = useData();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: transformedDefaultValues(order, product),
+    defaultValues: transformedDefaultValues(order),
   });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "order_products",
   });
-
-  // const orderProducts = useWatch({
-  //   control: form.control,
-  //   name: "order_products",
-  // });
 
   const totalValue = () => {
     const updatedProducts = form.getValues("order_products");
@@ -145,26 +139,31 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
   };
 
   useEffect(() => {
-    if (!isOpen || hasLoaded.current) return;
-    hasLoaded.current = true;
-    const loadData = async () => {
-      setCalculated(false);
-      const [clientsData, productsData] = await Promise.all([
-        getAllClients(),
-        getAllProducts(),
-      ]);
-      const productFind = productsData.find(
-        (item: IProduct) => item.product_id === 1
-      );
-      form.reset(
-        transformedDefaultValues(order ? order : ({} as IOrder), productFind)
-      );
-      setProduct(productFind);
-      setClients(clientsData);
-      setProducts(productsData);
-    };
-    loadData();
-  }, [isOpen, order, product, form]);
+    if (isOpen) {
+      const loadData = async () => {
+        setCalculated(false);
+        const [clientsData, productsData] = await Promise.all([
+          getAllClients(),
+          getAllProducts(),
+        ]);
+
+        const productFind = productsData.find(
+          (item: IProduct) => item.product_id === 1
+        );
+
+        setProduct(productFind);
+        setClients(clientsData);
+        setProducts(productsData);
+
+        const resetValues = order
+          ? transformedDefaultValues(order)
+          : transformedDefaultValues({} as IOrder, productFind);
+
+        form.reset(resetValues);
+      };
+      loadData();
+    }
+  }, [isOpen, order, form]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setLoading(true);
@@ -240,7 +239,7 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
                     <FormLabel>Cliente</FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(Number(value))}
-                      defaultValue={String(field.value)}
+                      defaultValue={order ? String(field.value) : ""}
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">

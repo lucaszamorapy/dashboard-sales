@@ -30,7 +30,7 @@ export interface IClient {
 
 export interface IOrder {
   order_id?: number;
-  client_id: number;
+  client_id?: number | null;
   order_products?: IOrderProduct[];
   client?: Omit<IClient, 'client_id' | 'cep' | 'regidh' | 'regiusu' | 'regadh' | 'regausu'>;
   payment_method: string;
