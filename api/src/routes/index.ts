@@ -4,7 +4,7 @@ import { createClientController, getAllClientsController, getClientController, u
 import { verifyToken } from '../middleware'
 import { createProductController, getAllProductsController, getProductController, updateProductController } from '../controllers/products'
 import { createOrderController, filterOrderController, getAllOrdersController, getOrderController, updateOrderController } from '../controllers/orders'
-import { createOrderProductController, updateOrderProductController } from '../controllers/orderProducts'
+import { createOrderProductController, deleteOrderProductController, updateOrderProductController } from '../controllers/orderProducts'
 
 
 export const router = express.Router()
@@ -37,3 +37,4 @@ router.put("/orders", verifyToken, updateOrderController)
 //orderProducts
 router.post("/orderProducts", verifyToken, createOrderProductController)
 router.put("/orderProducts", verifyToken, updateOrderProductController)
+router.delete("/orderProducts/:id", verifyToken, deleteOrderProductController)

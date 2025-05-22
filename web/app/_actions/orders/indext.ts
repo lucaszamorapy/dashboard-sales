@@ -50,3 +50,11 @@ export const upsertOrderProducts = async (orderProduct: IOrderProduct) => {
   }
   return response;
 }
+
+export const deleteOrderProducts = async (id: number) => {
+  return await req.setPayload({
+    url: `/orderProducts/${id}`,
+    message: true,
+    messageError: "Ocorreu um erro ao deletar o produto"
+  }).delete()
+}

@@ -54,6 +54,7 @@ import { ptBR } from "date-fns/locale";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { Textarea } from "@/app/components/ui/textarea";
 import {
+  deleteOrderProducts,
   getAllOrders,
   upsertOrderProducts,
   upsertOrders,
@@ -116,7 +117,12 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
     setCalculated(true);
   };
 
-  const removeProduct = (index: number) => {
+  const removeProduct = async (index: number) => {
+    if (order && fields[index].order_product_id) {
+      await deleteOrderProducts(fields[index].order_product_id);
+      const response = await getAllOrders();
+      setData(response);
+    }
     remove(index);
     setTimeout(() => {
       totalValue();
@@ -155,10 +161,10 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
         setClients(clientsData);
         setProducts(productsData);
 
-        const resetValues = order
-          ? transformedDefaultValues(order)
-          : transformedDefaultValues({} as IOrder, productFind);
-
+        const resetValues = transformedDefaultValues(
+          order ?? ({} as IOrder),
+          productFind
+        );
         form.reset(resetValues);
       };
       loadData();
@@ -239,7 +245,7 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
                     <FormLabel>Cliente</FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(Number(value))}
-                      defaultValue={order ? String(field.value) : ""}
+                      defaultValue={order ? String(order.client_id) : ""}
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
