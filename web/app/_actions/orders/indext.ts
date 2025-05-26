@@ -1,4 +1,4 @@
-import { IOrder, IOrderProduct } from "@/app/types"
+import { IFilterOrder, IOrder, IOrderProduct } from "@/app/types"
 import { ApiRequisition } from ".."
 
 const req = new ApiRequisition()
@@ -8,6 +8,15 @@ export const getAllOrders = () => {
     url: "/orders",
     message: true,
   }).get()
+  return response
+}
+
+export const filterOrders = (filter: IFilterOrder) => {
+  const response = req.setPayload({
+    url: "/orders/filter",
+    content: filter,
+    message: false,
+  }).post()
   return response
 }
 
@@ -37,14 +46,14 @@ export const upsertOrderProducts = async (orderProduct: IOrderProduct) => {
     response = await req.setPayload({
       url: "/orderProducts",
       content: orderProduct,
-      message: true,
+      message: false,
       messageError: "Ocorreu um erro ao alterar o pedido"
     }).put();
   } else {
     response = await req.setPayload({
       url: "/orderProducts",
       content: orderProduct,
-      message: true,
+      message: false,
       messageError: "Ocorreu um erro ao cadastrar o pedido"
     }).post();
   }

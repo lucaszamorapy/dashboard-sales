@@ -97,7 +97,7 @@ export class ApiRequisition {
       const { data } = await api.put(this.requestPayload.url, this.requestPayload.content);
       if (this.requestPayload.messageSuccess) {
         toast.success(this.requestPayload.messageSuccess);
-      } else {
+      } else if (this.requestPayload.message && !this.requestPayload.messageSuccess) {
         toast.success(data.message);
       }
       return data.result

@@ -516,7 +516,7 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
                 {loading ? (
                   <Button className="text-white" disabled>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Cadastrando
+                    {order ? "Atualizando" : "Cadastrando"}
                   </Button>
                 ) : (
                   <div className="flex gap-2">

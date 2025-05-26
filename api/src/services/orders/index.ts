@@ -85,7 +85,7 @@ export const filterOrder = async (data: IFilterOrder) => {
     } else if (data.final_date) {
       where.delivery_date = { [Op.lte]: final };
     }
-    return await Order.findAll({
+    const ordersFilter = await Order.findAll({
       where,
       include: [
         {
@@ -107,6 +107,7 @@ export const filterOrder = async (data: IFilterOrder) => {
         },
       ]
     });
+    return new Message(ordersFilter, `Total de ${ordersFilter.length} pedido(s) encontrado(s)`);
   }
   catch (error: any) {
     throw new Error(error.message);

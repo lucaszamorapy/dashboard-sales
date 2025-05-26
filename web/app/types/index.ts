@@ -44,7 +44,10 @@ export interface IOrder {
   regausu?: number;
 }
 
-
+export interface IFilterOrder {
+  init_date?: string;
+  final_date?: string
+}
 
 export interface IOrderProduct {
   order_product_id?: number;

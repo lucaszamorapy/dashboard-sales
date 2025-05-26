@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Input } from "./ui/input";
 
-interface PhoneInputProps {
+interface FormatInputProps {
   onChange: (value: string | number | undefined) => void;
   onBlur?: () => void;
   maxLength?: number;
@@ -18,7 +18,7 @@ const FormatInput = ({
   style,
   type,
   ...props
-}: PhoneInputProps) => {
+}: FormatInputProps) => {
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, "");
     if (digits.length <= 2) return `${digits}`;
