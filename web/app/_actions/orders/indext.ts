@@ -11,6 +11,14 @@ export const getAllOrders = () => {
   return response
 }
 
+export const getOrder = (id: number) => {
+  const response = req.setPayload({
+    url: `/orders/${id}`,
+    message: true,
+  }).get()
+  return response
+}
+
 export const filterOrders = (filter: IFilterOrder) => {
   const response = req.setPayload({
     url: "/orders/filter",

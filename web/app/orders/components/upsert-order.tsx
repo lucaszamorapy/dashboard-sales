@@ -91,7 +91,6 @@ const formSchema = z.object({
 const UpsertOrder = ({ order }: UpsertOrderProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [calculated, setCalculated] = useState<boolean>(false);
   const [clients, setClients] = useState<IClient[]>([]);
   const [products, setProducts] = useState<IProduct[]>([]);
   const [product, setProduct] = useState({} as IProduct);
@@ -109,24 +108,24 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
 
   const totalValue = () => {
     const updatedProducts = form.getValues("order_products");
+    console.log(updatedProducts);
     const total = updatedProducts.reduce((acc, item) => {
-      const price = item.product?.price ?? 0;
+      let price;
+      if (item.product?.price === undefined) {
+        price = 0;
+      }
+      price = item.product?.price ?? 0;
       return acc + price * item.quantity;
     }, 0);
     form.setValue("total", total);
-    setCalculated(true);
   };
 
   const removeProduct = async (index: number) => {
-    if (order && fields[index].order_product_id) {
+    if (order && order.order_id && fields[index].order_product_id) {
       await deleteOrderProducts(fields[index].order_product_id);
-      const response = await getAllOrders();
-      setData(response);
     }
     remove(index);
-    setTimeout(() => {
-      totalValue();
-    }, 0);
+    totalValue();
   };
 
   const addProduct = () => {
@@ -139,15 +138,12 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
         price: product.price,
       },
     });
-    setTimeout(() => {
-      totalValue();
-    }, 0);
+    totalValue();
   };
 
   useEffect(() => {
     if (isOpen) {
       const loadData = async () => {
-        setCalculated(false);
         const [clientsData, productsData] = await Promise.all([
           getAllClients(),
           getAllProducts(),
@@ -380,7 +376,11 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
                               <FormatInput
                                 placeholder="Digite a quantidade"
                                 type="onlyNumber"
-                                {...field}
+                                onChange={(value) => {
+                                  field.onChange(value);
+                                  totalValue();
+                                }}
+                                value={field.value}
                               />
                             </FormControl>
                             <FormMessage />
@@ -519,18 +519,9 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
                     {order ? "Atualizando" : "Cadastrando"}
                   </Button>
                 ) : (
-                  <div className="flex gap-2">
-                    <Button type="button" onClick={totalValue}>
-                      Calcular
-                    </Button>
-                    <Button
-                      disabled={!calculated}
-                      className="text-white"
-                      type="submit"
-                    >
-                      {order ? "Atualizar" : "Cadastrar"}
-                    </Button>
-                  </div>
+                  <Button className="text-white" type="submit">
+                    {order ? "Atualizar" : "Cadastrar"}
+                  </Button>
                 )}
               </div>
             </form>
