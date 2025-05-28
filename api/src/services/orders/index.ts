@@ -130,3 +130,12 @@ export const updateOrder = async (data: IOrder) => {
     throw new Error(error.message);
   }
 }
+
+export const deleteOrder = async (id: number) => {
+  try {
+    await Order.destroy({ where: { order_id: id } })
+    return new Message({}, `Pedido deletado com sucesso!`);
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}

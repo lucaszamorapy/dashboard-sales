@@ -3,7 +3,7 @@ import { alterUserController, createUserController, loginController, validTokenC
 import { createClientController, getAllClientsController, getClientController, updateClientController } from '../controllers/clients'
 import { verifyToken } from '../middleware'
 import { createProductController, getAllProductsController, getProductController, updateProductController } from '../controllers/products'
-import { createOrderController, filterOrderController, getAllOrdersController, getOrderController, updateOrderController } from '../controllers/orders'
+import { createOrderController, deleteOrderController, filterOrderController, getAllOrdersController, getOrderController, updateOrderController } from '../controllers/orders'
 import { createOrderProductController, deleteOrderProductController, updateOrderProductController } from '../controllers/orderProducts'
 
 
@@ -33,6 +33,7 @@ router.get("/orders/:id", verifyToken, getOrderController)
 router.post("/orders", verifyToken, createOrderController)
 router.post("/orders/filter", verifyToken, filterOrderController)
 router.put("/orders", verifyToken, updateOrderController)
+router.delete("/orders/:id", verifyToken, deleteOrderController)
 
 //orderProducts
 router.post("/orderProducts", verifyToken, createOrderProductController)

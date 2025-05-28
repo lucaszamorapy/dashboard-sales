@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { addRegis, AuthenticatedRequest } from "../../middleware";
-import { createOrder, filterOrder, getAllOrders, getOrder, updateOrder } from "../../services/orders";
+import { createOrder, deleteOrder, filterOrder, getAllOrders, getOrder, updateOrder } from "../../services/orders";
 
 export const getAllOrdersController = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
@@ -48,6 +48,17 @@ export const updateOrderController = async (req: AuthenticatedRequest, res: Resp
   try {
     const newBody = addRegis(req, "put")
     const response = await updateOrder(newBody);
+    res.status(201).json(response);
+  } catch (error: any) {
+    const message = error.message.replace(/^Error:\s*/, "");
+    res.status(400).json({ error: message });
+  }
+}
+
+export const deleteOrderController = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    const response = await deleteOrder(id);
     res.status(201).json(response);
   } catch (error: any) {
     const message = error.message.replace(/^Error:\s*/, "");
