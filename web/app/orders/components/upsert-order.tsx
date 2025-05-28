@@ -196,12 +196,12 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
         }
         await upsertOrderProducts(orderProductUpsert);
       }
+      const response = await getAllOrders();
+      setData(response);
+      setIsOpen(false);
     } catch (error) {
       console.log(error);
     }
-    const response = await getAllOrders();
-    setData(response);
-    setIsOpen(false);
     form.reset(transformedDefaultValues(order, product));
     setLoading(false);
   };

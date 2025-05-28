@@ -75,3 +75,11 @@ export const deleteOrderProducts = async (id: number) => {
     messageError: "Ocorreu um erro ao deletar o produto"
   }).delete()
 }
+
+export const deleteOrder = async (id: number) => {
+  return await req.setPayload({
+    url: `/orders/${id}`,
+    message: true,
+    messageError: "Ocorreu um erro ao deletar o pedido"
+  }).delete()
+}

@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import React from "react";
 import UpsertOrder from "../components/upsert-order";
+import DeleteOrder from "../components/delete-order";
 
 export const columns: ColumnDef<IOrder>[] = [
   {
@@ -39,7 +40,7 @@ export const columns: ColumnDef<IOrder>[] = [
     },
     cell: ({ row: { original: order } }) => {
       return (
-        <div className="flex w-[150px] flex-col">
+        <div className="flex lg:w-[150px] flex-col">
           {order.order_products &&
             order.order_products.map((item, index) => (
               <div key={index}>
@@ -116,8 +117,9 @@ export const columns: ColumnDef<IOrder>[] = [
     header: () => <div className="">Ações</div>,
     cell: ({ row: { original: order } }) => {
       return (
-        <div className="">
+        <div className="flex items-center gap-5">
           <UpsertOrder order={order} />
+          {order.order_id && <DeleteOrder order_id={order.order_id} />}
         </div>
       );
     },
