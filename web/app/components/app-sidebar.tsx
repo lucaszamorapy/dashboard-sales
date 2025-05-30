@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { IconInnerShadowTop } from "@tabler/icons-react";
 import {
   Sidebar,
   SidebarContent,
@@ -14,7 +13,7 @@ import {
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import Link from "next/link";
-import { House, NotebookPen, Store, Users } from "lucide-react";
+import { House, NotebookPen, ShoppingCart, Store, Users } from "lucide-react";
 
 const data = {
   user: {
@@ -57,8 +56,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link href={"/"}>
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Dashboard Sales</span>
+                <ShoppingCart className="!size-5" />
+                <span className="text-base font-semibold">Dashboard Food</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -68,7 +67,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );
