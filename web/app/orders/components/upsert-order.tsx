@@ -38,7 +38,7 @@ import {
   PencilIcon,
   PlusCircle,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { paymentMethods, transformedDefaultValues } from "../constants";
@@ -106,9 +106,8 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
     name: "order_products",
   });
 
-  const totalValue = () => {
+  const totalValue = useCallback(() => {
     const updatedProducts = form.getValues("order_products");
-    console.log(updatedProducts);
     const total = updatedProducts.reduce((acc, item) => {
       let price;
       if (item.product?.price === undefined) {
@@ -118,7 +117,7 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
       return acc + price * item.quantity;
     }, 0);
     form.setValue("total", total);
-  };
+  }, [form]);
 
   const removeProduct = async (index: number) => {
     if (order && order.order_id && fields[index].order_product_id) {
@@ -162,10 +161,11 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
           productFind
         );
         form.reset(resetValues);
+        totalValue();
       };
       loadData();
     }
-  }, [isOpen, order, form]);
+  }, [isOpen, order, form, totalValue]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setLoading(true);

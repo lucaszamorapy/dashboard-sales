@@ -1,37 +1,38 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { validToken } from "../_actions/users";
 
-const RouteGuard = () => {
+export default function RouteGuard({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const router = useRouter();
+  const pathname = usePathname();
+  const [authorized, setAuthorized] = useState(false);
+
+  const checkToken = useCallback(async () => {
+    if (pathname === "/login") {
+      setAuthorized(true);
+      return;
+    }
+    const token = localStorage.getItem("token");
+    const data = await validToken({ token });
+
+    if (!token || !data) {
+      router.push("/login");
+    } else {
+      setAuthorized(true);
+    }
+  }, [pathname, router]);
 
   useEffect(() => {
-    const checkToken = async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        router.push("/login");
-        return;
-      }
-
-      try {
-        const data = await validToken({ token });
-
-        if (!data) {
-          router.push("/login");
-        }
-      } catch (err) {
-        console.error(err);
-        router.push("/login");
-      }
-    };
-
     checkToken();
-  }, [router]);
+  }, [checkToken]);
 
-  return null;
-};
+  if (!authorized) return null;
 
-export default RouteGuard;
+  return <>{children}</>;
+}

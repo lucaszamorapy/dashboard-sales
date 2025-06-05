@@ -48,11 +48,11 @@ const DeleteOrder = ({ order_id }: DeleteOrderProps) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel asChild>
-            <Button className="bg-muted">Cancelar</Button>
+            <Button className="bg-muted text-muted-foreground">Cancelar</Button>
           </AlertDialogCancel>
           <AlertDialogAction asChild>
             <Button className="text-white" onClick={onDelete}>
-              Deletar
+              Excluir
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>

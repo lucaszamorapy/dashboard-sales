@@ -12,6 +12,16 @@ export const getCep = async (cep: string) => {
   }
 }
 
-export const formatDate = (value: Date) => {
-  return moment(value).format('DD/MM/yyyy')
+export const formatDate = (value: Date, type: string = "normal") => {
+  let date: string = "";
+  switch (type) {
+    case "normal":
+      date = moment(value).format('DD/MM/yyyy')
+      break;
+    case "bd":
+      date = moment(value).format('YYYY-MM-DD')
+      break;
+  }
+  return date
+
 }

@@ -33,7 +33,7 @@ export interface IOrder {
   client_id?: number | null;
   order_products?: IOrderProduct[];
   client?: Omit<IClient, 'client_id' | 'cep' | 'regidh' | 'regiusu' | 'regadh' | 'regausu'>;
-  payment_method: string;
+  payment_method: "Pix" | "Dinheiro" | "Cartão";
   delivery_date: Date;
   delivery_time?: string | null;
   total: number;

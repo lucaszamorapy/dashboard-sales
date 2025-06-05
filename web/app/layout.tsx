@@ -31,8 +31,9 @@ export default function RootLayout({
         <Toaster />
         <AuthProvider>
           <DataProvider>
-            <RouteGuard />
-            <ClientLayout>{children}</ClientLayout>
+            <RouteGuard>
+              <ClientLayout>{children}</ClientLayout>
+            </RouteGuard>
           </DataProvider>
         </AuthProvider>
       </body>

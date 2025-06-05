@@ -1,11 +1,10 @@
 import React from "react";
 import { Badge } from "./ui/badge";
 import { CreditCard, DollarSign, QrCode } from "lucide-react";
-import { PaymentMethod } from "../types";
 import { type LucideIcon } from "lucide-react";
 
 interface PaymentMethodBadgeProps {
-  method: PaymentMethod;
+  method: "Pix" | "Dinheiro" | "Cartão";
 }
 
 type PaymentIconData = {
@@ -24,18 +23,18 @@ const PaymentMethodBadge = ({ method }: PaymentMethodBadgeProps) => {
   const list: IListMethod = {
     Pix: {
       icon: QrCode,
-      color: "bg-[rgba(0,255,170,0.25)]", // Neon verde água translúcido
-      text: "text-[rgb(0,255,170)]", // Texto neon
+      color: "bg-[rgba(0,168,120,0.15)]",
+      text: "text-[rgb(0,128,96)]",
     },
     Dinheiro: {
       icon: DollarSign,
-      color: "bg-[rgba(0,195,255,0.25)]", // Azul neon translúcido
-      text: "text-[rgb(0,195,255)]", // Azul neon vibrante
+      color: "bg-[rgba(0,140,200,0.15)]",
+      text: "text-[rgb(0,100,160)]",
     },
     Cartão: {
       icon: CreditCard,
-      color: "bg-[rgba(255,0,200,0.25)]", // Rosa neon translúcido
-      text: "text-[rgb(255,0,200)]",
+      color: "bg-[rgba(180,100,200,0.15)]",
+      text: "text-[rgb(120,60,150)]",
     },
   };
 

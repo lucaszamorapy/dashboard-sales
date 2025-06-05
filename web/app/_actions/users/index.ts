@@ -19,7 +19,7 @@ export const validToken = async (data: unknown) => {
     url: "/user/token",
     content: data,
     message: false,
-    messageError: "Token expirado",
+    messageError: "Perda de conexão, por favor logue novamente no sistema",
   }).post();
   return response;
 }
