@@ -25,10 +25,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/app/components/ui/chart";
-import { format } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 import { filterOrders } from "@/app/_actions/orders/indext";
 import { IFilterOrder, IOrder } from "@/app/types";
+import { formatDate } from "@/utils/functions";
 
 const chartConfig = {
   price: {
@@ -37,6 +37,11 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+interface IChartData {
+  delivery_date?: Date;
+  date: Date;
+  price: number;
+}
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = useState("90d");
@@ -44,12 +49,20 @@ export function ChartAreaInteractive() {
 
   const getChartData = useCallback(async (filter: IFilterOrder) => {
     const response = await filterOrders(filter);
-    const chartData = response.map((item: IOrder) => {
-      return {
-        date: item.delivery_date,
-        price: item.total,
-      };
-    });
+    const chartData = response.reduce((acc: IChartData[], item: IOrder) => {
+      const exist = acc.find(
+        (el) =>
+          formatDate(new Date(el.date), "bd") ===
+          formatDate(new Date(item.delivery_date), "bd")
+      );
+      if (exist) {
+        exist.price += item.total;
+      } else {
+        acc.push({ date: item.delivery_date, price: item.total });
+      }
+
+      return acc;
+    }, []);
     setOrders(chartData);
   }, []);
 
@@ -61,24 +74,24 @@ export function ChartAreaInteractive() {
         const week = new Date();
         week.setDate(today.getDate() - 6);
         await getChartData({
-          init_date: format(week, "yyyy-MM-dd"),
-          final_date: format(today, "yyyy-MM-dd"),
+          init_date: formatDate(week, "bd"),
+          final_date: formatDate(today, "bd"),
         });
         break;
       case "30d":
         const day30 = new Date();
         day30.setDate(today.getDate() - 29);
         await getChartData({
-          init_date: format(day30, "yyyy-MM-dd"),
-          final_date: format(today, "yyyy-MM-dd"),
+          init_date: formatDate(day30, "bd"),
+          final_date: formatDate(today, "bd"),
         });
         break;
       case "90d":
         const day90 = new Date();
         day90.setDate(today.getDate() - 89);
         await getChartData({
-          init_date: format(day90, "yyyy-MM-dd"),
-          final_date: format(today, "yyyy-MM-dd"),
+          init_date: formatDate(day90, "bd"),
+          final_date: formatDate(today, "bd"),
         });
         break;
       default:
@@ -92,12 +105,6 @@ export function ChartAreaInteractive() {
     }
   }, [filteredOrders, timeRange]);
 
-  useEffect(() => {
-    if (isMobile) {
-      setTimeRange("7d");
-    }
-  }, [isMobile]);
-
   return (
     <Card className="@container/card">
       <CardHeader>
@@ -106,7 +113,7 @@ export function ChartAreaInteractive() {
           <span className="hidden @[540px]/card:block">
             Total de lucro durante 90 dias
           </span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
+          <span className="@[540px]/card:hidden"> Últimos 90 dias</span>
         </CardDescription>
         <CardAction>
           <ToggleGroup
@@ -132,7 +139,7 @@ export function ChartAreaInteractive() {
               size="sm"
               aria-label="Select a value"
             >
-              <SelectValue placeholder="Last 3 months" />
+              <SelectValue placeholder="Últimos 90 dias" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
               <SelectItem value="90d" className="rounded-lg">
