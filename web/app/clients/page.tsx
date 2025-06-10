@@ -1,19 +1,38 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
-import { useData } from "../contexts/data-context";
+import { useCallback, useEffect, useState } from "react";
 import { DataTable } from "../components/ui/data-table";
-import { columns } from "./columns";
 import { getAllClients } from "../_actions/clients";
 import UpsertClient from "./components/upsert-client";
+import { getColumns } from "./columns";
+import { IClient } from "../types";
 
 const Clients = () => {
-  const { data, setData } = useData();
+  const [clients, setClients] = useState<IClient[]>([]);
 
   const getClients = useCallback(async () => {
     const response = await getAllClients();
-    setData(response);
-  }, [setData]);
+    setClients(response);
+  }, [setClients]);
+
+  const handleUpsert = (client: IClient) => {
+    const clientExist = clients.find(
+      (item: IClient) => item.client_id === client.client_id
+    );
+    let updatedClients: IClient[] = [];
+    if (clientExist) {
+      updatedClients = clients.map((item: IClient) => {
+        if (item.client_id === client.client_id) {
+          return { ...item, ...client };
+        } else {
+          return item;
+        }
+      });
+    } else {
+      updatedClients = [...clients, client];
+    }
+    setClients(updatedClients);
+  };
 
   useEffect(() => {
     getClients();
@@ -21,10 +40,14 @@ const Clients = () => {
 
   return (
     <div className="@container/main flex flex-1 flex-col p-6 gap-2">
-      {data && (
+      {clients && (
         <div className="flex flex-col gap-5">
-          <UpsertClient />
-          <DataTable columns={columns} data={data} columnFilter="name" />
+          <UpsertClient onUpsert={handleUpsert} />
+          <DataTable
+            columns={getColumns(handleUpsert)}
+            data={clients}
+            columnFilter="name"
+          />
         </div>
       )}
     </div>

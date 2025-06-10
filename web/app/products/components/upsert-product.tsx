@@ -1,4 +1,4 @@
-import { getAllProducts, upsertProduct } from "@/app/_actions/products";
+import { upsertProduct } from "@/app/_actions/products";
 import { MoneyInput } from "@/app/components/money-input";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -17,7 +17,6 @@ import {
   FormMessage,
 } from "@/app/components/ui/form";
 import { Input } from "@/app/components/ui/input";
-import { useData } from "@/app/contexts/data-context";
 import { IProduct } from "@/app/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogDescription } from "@radix-ui/react-dialog";
@@ -28,6 +27,7 @@ import { z } from "zod";
 
 interface UpsertProductProps {
   product?: IProduct;
+  onUpsert: (product: IProduct) => void;
 }
 
 const formSchema = z.object({
@@ -37,10 +37,9 @@ const formSchema = z.object({
   price: z.number({ required_error: "O preço é obrigatório." }),
 });
 
-const UpsertProduct = ({ product }: UpsertProductProps) => {
+const UpsertProduct = ({ product, onUpsert }: UpsertProductProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const { setData } = useData();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: product ?? {
@@ -69,9 +68,8 @@ const UpsertProduct = ({ product }: UpsertProductProps) => {
       } else {
         productUpsert = data;
       }
-      await upsertProduct(productUpsert);
-      const response = await getAllProducts();
-      setData(response);
+      const response = await upsertProduct(productUpsert);
+      onUpsert(response);
       setIsOpen(false);
       form.reset(
         product ?? {
@@ -135,15 +133,7 @@ const UpsertProduct = ({ product }: UpsertProductProps) => {
                 <FormItem>
                   <FormLabel>Preço</FormLabel>
                   <FormControl>
-                    <MoneyInput
-                      placeholder="Digite o preço"
-                      value={field.value}
-                      onValueChange={({ floatValue }) =>
-                        field.onChange(floatValue)
-                      }
-                      onBlur={field.onBlur}
-                      disabled={field.disabled}
-                    />
+                    <MoneyInput placeholder="Digite o preço" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

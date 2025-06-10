@@ -1,4 +1,4 @@
-import { getAllClients, upsertClient } from "@/app/_actions/clients";
+import { upsertClient } from "@/app/_actions/clients";
 import FormatInput from "@/app/components/format-input";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -17,7 +17,6 @@ import {
   FormMessage,
 } from "@/app/components/ui/form";
 import { Input } from "@/app/components/ui/input";
-import { useData } from "@/app/contexts/data-context";
 import { IClient } from "@/app/types";
 import { getCep } from "@/utils/functions";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +28,7 @@ import { z } from "zod";
 
 interface UpsertClientProps {
   client?: IClient;
+  onUpsert: (client: IClient) => void;
 }
 
 const formSchema = z.object({
@@ -49,10 +49,9 @@ const formSchema = z.object({
   cel: z.string().max(15),
 });
 
-const UpsertClient = ({ client }: UpsertClientProps) => {
+const UpsertClient = ({ client, onUpsert }: UpsertClientProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
-  const { setData } = useData();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: client ?? {
@@ -89,9 +88,8 @@ const UpsertClient = ({ client }: UpsertClientProps) => {
       } else {
         clientUpsert = data;
       }
-      await upsertClient(clientUpsert);
-      const response = await getAllClients();
-      setData(response);
+      const response = await upsertClient(clientUpsert);
+      onUpsert(response);
       setIsOpen(false);
       form.reset(
         client ?? {

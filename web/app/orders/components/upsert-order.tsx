@@ -28,7 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
-import { useData } from "@/app/contexts/data-context";
 import { IClient, IOrder, IOrderProduct, IProduct } from "@/app/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -62,6 +61,7 @@ import {
 
 interface UpsertOrderProps {
   order?: IOrder;
+  onUpsert: (order: IOrder[]) => void;
 }
 
 const formSchema = z.object({
@@ -88,13 +88,12 @@ const formSchema = z.object({
   obs: z.string().nullable(),
 });
 
-const UpsertOrder = ({ order }: UpsertOrderProps) => {
+const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [clients, setClients] = useState<IClient[]>([]);
   const [products, setProducts] = useState<IProduct[]>([]);
   const [product, setProduct] = useState({} as IProduct);
-  const { setData } = useData();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -197,7 +196,7 @@ const UpsertOrder = ({ order }: UpsertOrderProps) => {
         await upsertOrderProducts(orderProductUpsert);
       }
       const response = await getAllOrders();
-      setData(response);
+      onUpsert(response);
       setIsOpen(false);
     } catch (error) {
       console.log(error);

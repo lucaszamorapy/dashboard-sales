@@ -1,24 +1,23 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DataTable } from "../components/ui/data-table";
 import { getAllOrders } from "../_actions/orders/indext";
-import { columns } from "./columns";
+import { getColumns } from "./columns";
 import UpsertOrder from "./components/upsert-order";
 import FilterOrder from "./components/filter-order";
 import { IOrder } from "../types";
-import { useData } from "../contexts/data-context";
 
 const Orders = () => {
-  const { data, setData } = useData();
+  const [orders, setOrders] = useState<IOrder[]>([]);
 
   const getOrders = useCallback(async () => {
     const response = await getAllOrders();
-    setData(response);
-  }, [setData]);
+    setOrders(response);
+  }, [setOrders]);
 
-  const updateDataTable = (result: IOrder[]) => {
-    setData(result);
+  const updateDataTable = (order: IOrder[]) => {
+    setOrders(order);
   };
 
   useEffect(() => {
@@ -30,9 +29,13 @@ const Orders = () => {
       <div className="flex flex-col gap-5">
         <div className="flex flex-col lg:flex-row  justify-between">
           <FilterOrder handleFilter={updateDataTable} />
-          <UpsertOrder />
+          <UpsertOrder onUpsert={updateDataTable} />
         </div>
-        <DataTable columns={columns} data={data} columnFilter="client_name" />
+        <DataTable
+          columns={getColumns(updateDataTable)}
+          data={orders}
+          columnFilter="client_name"
+        />
       </div>
     </div>
   );

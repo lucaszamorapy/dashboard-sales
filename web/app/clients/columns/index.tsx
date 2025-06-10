@@ -4,7 +4,9 @@ import { ArrowUpDown } from "lucide-react";
 import UpsertClient from "../components/upsert-client";
 
 //colunas do datatable
-export const columns: ColumnDef<IClient>[] = [
+export const getColumns = (
+  handleUpsert: (client: IClient) => void
+): ColumnDef<IClient>[] => [
   {
     accessorKey: "client_id",
     header: ({ column }) => {
@@ -80,7 +82,7 @@ export const columns: ColumnDef<IClient>[] = [
     cell: ({ row: { original: client } }) => {
       return (
         <div className="lg:w-[1px]">
-          <UpsertClient client={client} />
+          <UpsertClient client={client} onUpsert={handleUpsert} />
         </div>
       );
     },

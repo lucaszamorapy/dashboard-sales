@@ -7,7 +7,9 @@ import React from "react";
 import UpsertOrder from "../components/upsert-order";
 import DeleteOrder from "../components/delete-order";
 
-export const columns: ColumnDef<IOrder>[] = [
+export const getColumns = (
+  handleUpsert: (order: IOrder[]) => void
+): ColumnDef<IOrder>[] => [
   {
     accessorKey: "order_id",
     header: ({ column }) => {
@@ -118,7 +120,7 @@ export const columns: ColumnDef<IOrder>[] = [
     cell: ({ row: { original: order } }) => {
       return (
         <div className="flex items-center gap-5">
-          <UpsertOrder order={order} />
+          <UpsertOrder order={order} onUpsert={handleUpsert} />
           {order.order_id && <DeleteOrder order_id={order.order_id} />}
         </div>
       );
