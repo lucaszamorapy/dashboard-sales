@@ -26,6 +26,7 @@ export const transformedDefaultValues = (order?: IOrder | any, product?: IProduc
     };
   } else {
     defaultValues = {
+      client_id: 1,
       order_products: [
         {
           product_id: product?.product_id,

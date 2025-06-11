@@ -11,22 +11,21 @@ import {
   AlertDialogTrigger,
 } from "@/app/components/ui/alert-dialog";
 import { Button } from "@/app/components/ui/button";
-import { useData } from "@/app/contexts/data-context";
+import { IOrder } from "@/app/types";
 import { Trash2Icon } from "lucide-react";
 import React from "react";
 
 interface DeleteOrderProps {
   order_id: number;
+  onUpsert: (order: IOrder[]) => void;
 }
 
-const DeleteOrder = ({ order_id }: DeleteOrderProps) => {
-  const { setData } = useData();
-
+const DeleteOrder = ({ order_id, onUpsert }: DeleteOrderProps) => {
   const onDelete = async () => {
     try {
       await deleteOrder(order_id);
       const response = await getAllOrders();
-      setData(response);
+      onUpsert(response);
     } catch (error) {
       console.log(error);
     }

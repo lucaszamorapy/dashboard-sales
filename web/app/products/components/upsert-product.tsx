@@ -133,7 +133,14 @@ const UpsertProduct = ({ product, onUpsert }: UpsertProductProps) => {
                 <FormItem>
                   <FormLabel>Preço</FormLabel>
                   <FormControl>
-                    <MoneyInput placeholder="Digite o preço" {...field} />
+                    <MoneyInput
+                      placeholder="Digite o preço"
+                      value={field.value ?? 0}
+                      ref={field.ref}
+                      onValueChange={(values) => {
+                        field.onChange(values.floatValue ?? 0);
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

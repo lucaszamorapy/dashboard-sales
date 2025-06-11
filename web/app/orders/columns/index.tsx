@@ -121,7 +121,9 @@ export const getColumns = (
       return (
         <div className="flex items-center gap-5">
           <UpsertOrder order={order} onUpsert={handleUpsert} />
-          {order.order_id && <DeleteOrder order_id={order.order_id} />}
+          {order.order_id && (
+            <DeleteOrder order_id={order.order_id} onUpsert={handleUpsert} />
+          )}
         </div>
       );
     },

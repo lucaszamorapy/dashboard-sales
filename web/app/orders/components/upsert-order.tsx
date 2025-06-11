@@ -97,7 +97,6 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: transformedDefaultValues(order),
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -155,11 +154,11 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
         setClients(clientsData);
         setProducts(productsData);
 
-        const resetValues = transformedDefaultValues(
-          order ?? ({} as IOrder),
-          productFind
-        );
-        form.reset(resetValues);
+        const newDefaults = order
+          ? transformedDefaultValues(order)
+          : transformedDefaultValues(order ?? ({} as IOrder), productFind);
+
+        form.reset(newDefaults);
         totalValue();
       };
       loadData();
@@ -240,7 +239,7 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
                     <FormLabel>Cliente</FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(Number(value))}
-                      defaultValue={order ? String(order.client_id) : ""}
+                      defaultValue={order ? String(order?.client_id) : "1"}
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -425,7 +424,14 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
                     <FormItem>
                       <FormLabel>Total</FormLabel>
                       <FormControl>
-                        <MoneyInput placeholder="Valor total" {...field} />
+                        <MoneyInput
+                          placeholder="Valor total"
+                          value={field.value ?? 0}
+                          ref={field.ref}
+                          onValueChange={(values) => {
+                            field.onChange(values.floatValue ?? 0);
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
