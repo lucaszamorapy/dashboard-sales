@@ -44,7 +44,6 @@ import {
   upsertOrderProducts,
   upsertOrders,
 } from "@/app/_actions/orders/indext";
-import { parse } from "date-fns";
 
 interface UpsertOrderProps {
   order?: IOrder;
@@ -70,7 +69,9 @@ const formSchema = z.object({
   ),
   total: z.number(),
   payment_method: z.string(),
-  delivery_date: z.string(),
+  delivery_date: z.date({
+    required_error: "A data é obrigatório.",
+  }),
   delivery_time: z.string().nullable(),
   obs: z.string().nullable(),
 });
@@ -159,7 +160,7 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
       let orderUpsert = {
         client_id: data?.client_id,
         payment_method: data?.payment_method,
-        delivery_date: parse(data?.delivery_date, "dd/MM/yyyy", new Date()),
+        delivery_date: data?.delivery_date,
         delivery_time: data?.delivery_time,
         total: data?.total,
         obs: data?.obs,
@@ -366,7 +367,7 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
                                   field.onChange(value);
                                   totalValue();
                                 }}
-                                value={field.value}
+                                initialValue={field.value}
                               />
                             </FormControl>
                             <FormMessage />
@@ -437,7 +438,8 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
                         <FormatInput
                           type="date"
                           placeholder="Data"
-                          {...field}
+                          initialValue={field.value}
+                          onChange={field.onChange}
                         />
                         <FormMessage />
                       </FormItem>
@@ -455,7 +457,8 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
                         <FormatInput
                           type="time"
                           placeholder="Horário"
-                          {...field}
+                          onChange={field.onChange}
+                          initialValue={field.value}
                         />
                       </FormControl>
                       <FormMessage />

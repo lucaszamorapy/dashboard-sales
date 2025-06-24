@@ -45,8 +45,24 @@ const formSchema = z.object({
     .string()
     .min(1, { message: "Por favor, preencha o seu bairro." })
     .max(255),
-  tel: z.string().max(15),
-  cel: z.string().max(15),
+  tel: z
+    .string()
+    .max(15)
+    .regex(
+      /^\(?\d{2}\)?\s?[2-5]\d{3}-?\d{4}$/,
+      "Telefone fixo inválido. Ex: (31) 3456-7890"
+    )
+    .optional()
+    .or(z.literal("")),
+  cel: z
+    .string()
+    .max(15)
+    .regex(
+      /^\(?\d{2}\)?\s?9\d{4}-?\d{4}$/,
+      "Celular inválido. Ex: (31) 91234-5678"
+    )
+    .optional()
+    .or(z.literal("")),
 });
 
 const UpsertClient = ({ client, onUpsert }: UpsertClientProps) => {
@@ -177,6 +193,7 @@ const UpsertClient = ({ client, onUpsert }: UpsertClientProps) => {
                       placeholder="CEP"
                       maxLength={9}
                       type="cep"
+                      initialValue={rest.value}
                       {...rest}
                     />
                   </FormControl>
@@ -219,10 +236,11 @@ const UpsertClient = ({ client, onUpsert }: UpsertClientProps) => {
                     <FormLabel>Telefone</FormLabel>
                     <FormControl>
                       <FormatInput
-                        {...field}
                         placeholder="Telefone"
                         maxLength={14}
                         type="phone"
+                        initialValue={field.value}
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -237,9 +255,10 @@ const UpsertClient = ({ client, onUpsert }: UpsertClientProps) => {
                     <FormLabel>Celular</FormLabel>
                     <FormControl>
                       <FormatInput
-                        {...field}
                         placeholder="Celular"
                         type="phone"
+                        initialValue={field.value}
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />

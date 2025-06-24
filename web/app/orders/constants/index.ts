@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IOrder, IProduct } from "@/app/types";
-import { formatDate } from "@/utils/functions";
+import { parseISO } from "date-fns";
 
 export const paymentMethods = ["Cartão", "Dinheiro", "Pix"]
 
@@ -20,7 +20,7 @@ export const transformedDefaultValues = (order?: IOrder | any, product?: IProduc
       payment_method: order.payment_method,
       delivery_date:
 
-        formatDate(order.delivery_date, "normal"),
+        parseISO(order.delivery_date),
       delivery_time: order.delivery_time ?? "",
       obs: order.obs ?? null,
     };
@@ -36,7 +36,7 @@ export const transformedDefaultValues = (order?: IOrder | any, product?: IProduc
       ],
       total: 0,
       payment_method: "Pix",
-      delivery_date: formatDate(new Date(), "normal"),
+      delivery_date: new Date(),
       delivery_time: "",
       obs: null,
     }
