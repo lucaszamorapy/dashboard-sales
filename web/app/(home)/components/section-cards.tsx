@@ -81,10 +81,10 @@ const SectionCards = () => {
     setTotalPastMonth(calculate(ordersFilterLastMonth));
     setTotalCurrentMonth(calculate(ordersCurrentMonth));
     const calc = totalCurrentMonth - totalPastMonth;
-    const percentual = (calc / totalPastMonth) * 100;
+    const percentual = totalPastMonth > 0 ? (calc / totalPastMonth) * 100 : 0;
     const formated = percentual.toFixed(2);
+
     setPercentual(formated);
-    console.log(formated);
   }, [orders, totalCurrentMonth, totalPastMonth]);
 
   const calculate = (itens: IOrder[]) => {

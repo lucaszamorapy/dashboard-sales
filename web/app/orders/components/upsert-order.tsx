@@ -30,26 +30,12 @@ import {
 } from "@/app/components/ui/select";
 import { IClient, IOrder, IOrderProduct, IProduct } from "@/app/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  CalendarIcon,
-  CircleMinus,
-  Loader2,
-  PencilIcon,
-  PlusCircle,
-} from "lucide-react";
+import { CircleMinus, Loader2, PencilIcon, PlusCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { paymentMethods, transformedDefaultValues } from "../constants";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/app/components/ui/popover";
-import { cn } from "@/app/lib/utils";
-import { format } from "date-fns";
-import { Calendar } from "@/app/components/ui/calendar";
-import { ptBR } from "date-fns/locale";
+
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { Textarea } from "@/app/components/ui/textarea";
 import {
@@ -58,6 +44,7 @@ import {
   upsertOrderProducts,
   upsertOrders,
 } from "@/app/_actions/orders/indext";
+import { parse } from "date-fns";
 
 interface UpsertOrderProps {
   order?: IOrder;
@@ -83,7 +70,7 @@ const formSchema = z.object({
   ),
   total: z.number(),
   payment_method: z.string(),
-  delivery_date: z.date(),
+  delivery_date: z.string(),
   delivery_time: z.string().nullable(),
   obs: z.string().nullable(),
 });
@@ -96,6 +83,7 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
   const [product, setProduct] = useState({} as IProduct);
 
   const form = useForm<z.infer<typeof formSchema>>({
+    defaultValues: transformedDefaultValues(order ?? {}, product),
     resolver: zodResolver(formSchema),
   });
 
@@ -171,7 +159,7 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
       let orderUpsert = {
         client_id: data?.client_id,
         payment_method: data?.payment_method,
-        delivery_date: data?.delivery_date,
+        delivery_date: parse(data?.delivery_date, "dd/MM/yyyy", new Date()),
         delivery_time: data?.delivery_time,
         total: data?.total,
         obs: data?.obs,
@@ -239,7 +227,7 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
                     <FormLabel>Cliente</FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(Number(value))}
-                      defaultValue={order ? String(order?.client_id) : "1"}
+                      value={String(field.value ?? "")}
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -442,48 +430,26 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
                 <FormField
                   control={form.control}
                   name="delivery_date"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Data de Entrega</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl className="w-full">
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP", { locale: ptBR })
-                              ) : (
-                                <span>Selecione uma data</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={
-                              field.value ? new Date(field.value) : undefined
-                            }
-                            onSelect={(date) => field.onChange(date)}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    return (
+                      <FormItem className="w-full">
+                        <FormLabel>Data de Entrega</FormLabel>
+                        <FormatInput
+                          type="date"
+                          placeholder="Data"
+                          {...field}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
+
                 <FormField
                   control={form.control}
                   name="delivery_time"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-full">
                       <FormLabel>Horário</FormLabel>
                       <FormControl>
                         <FormatInput

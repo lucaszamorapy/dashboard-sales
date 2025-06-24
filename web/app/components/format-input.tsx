@@ -55,6 +55,14 @@ const FormatInput = ({
     return `${hour}:${minute}`;
   };
 
+  const formatDate = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 8); // Limita a 8 números
+
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+  };
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     let formated: string | number | undefined;
@@ -71,6 +79,9 @@ const FormatInput = ({
         break;
       case "time":
         formated = formatTime(value);
+        break;
+      case "date":
+        formated = formatDate(value);
         break;
       default:
         break;

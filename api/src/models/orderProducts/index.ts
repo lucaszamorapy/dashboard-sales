@@ -70,7 +70,7 @@ export class OrderProducts extends Model<IOrderProduct, IOrderCreationAttributes
       },
       {
         sequelize: sequelize, // Sua instância do Sequelize
-        tableName: "order_products",
+        tableName: "orders_products",
         timestamps: false,
       }
     );
