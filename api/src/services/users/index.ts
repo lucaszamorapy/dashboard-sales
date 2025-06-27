@@ -53,7 +53,7 @@ export const login = async (data: IUserLogin) => {
     const isValidPassword = await bcrypt.compare(data.password, existUser.password);
 
     if (!isValidPassword) {
-      throw new Error("Senha inválida.");
+      throw new Error("Senha inválida");
     }
     const secretKey = process.env.JWT_KEY;
 

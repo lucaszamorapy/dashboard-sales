@@ -57,7 +57,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <Link href={"/"}>
                 <ShoppingCart className="!size-5" />
-                <span className="text-base font-semibold">Dashboard Food</span>
+                <span className="text-base font-semibold">Deia Dashboard</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

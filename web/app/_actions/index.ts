@@ -62,7 +62,7 @@ export class ApiRequisition {
       if (this.requestPayload.messageError) {
         toast.error(this.requestPayload.messageError);
       } else {
-        toast.error(error.message);
+        toast.error(error.response.data.error);
       }
     }
   }
@@ -84,7 +84,7 @@ export class ApiRequisition {
       if (this.requestPayload.messageError) {
         toast.error(this.requestPayload.messageError);
       } else {
-        toast.error(error.message);
+        toast.error(error.response.data.error);
       }
     }
   }
@@ -106,7 +106,7 @@ export class ApiRequisition {
       if (this.requestPayload.messageError) {
         toast.error(this.requestPayload.messageError);
       } else {
-        toast.error(error.message);
+        toast.error(error.response.data.error);
       }
     }
   }
@@ -128,7 +128,7 @@ export class ApiRequisition {
       if (this.requestPayload.messageError) {
         toast.error(this.requestPayload.messageError);
       } else {
-        toast.error(error.message);
+        toast.error(error.response.data.error);
       }
     }
   }

@@ -6,7 +6,6 @@ import { Product } from '../models/products';
 import { User } from '../models/users';
 import { OrderProducts } from '../models/orderProducts';
 
-dotenv.config()
 
 export const sequelizeDb = new Sequelize({
   dialect: 'mysql',
