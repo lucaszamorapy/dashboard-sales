@@ -1,4 +1,3 @@
-import PaymentMethodBadge from "@/app/components/payment-method-badge";
 import { IOrder } from "@/app/types";
 import { formatDate } from "@/utils/functions";
 import { ColumnDef } from "@tanstack/react-table";
@@ -6,6 +5,7 @@ import { ArrowUpDown } from "lucide-react";
 import React from "react";
 import UpsertOrder from "../components/upsert-order";
 import DeleteOrder from "../components/delete-order";
+import FormatBadge from "@/app/components/format-badge";
 
 export const getColumns = (
   handleUpsert: (order: IOrder[]) => void
@@ -77,7 +77,7 @@ export const getColumns = (
           {order && order.client && (
             <>
               <span>{order.client.name}</span>
-              <PaymentMethodBadge method={order.payment_method} />
+              <FormatBadge type={order.payment_method} />
             </>
           )}
         </div>
@@ -101,6 +101,17 @@ export const getColumns = (
             </>
           )}
         </div>
+      );
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row: { original: order } }) => {
+      return (
+        <>
+          <FormatBadge type={order.status} />
+        </>
       );
     },
   },

@@ -39,12 +39,21 @@ export enum PaymentMethod {
   Cartão = 'Cartão',
 }
 
+export enum Status {
+  NAO_INICIADO = "Não Iniciado",
+  EM_ANDAMENTO = "Em Andamento",
+  FINALIZADO = "Finalizado",
+}
+
+
+
 export interface IOrder {
   order_id?: number;
   client_id: number;
   payment_method: PaymentMethod;
   delivery_date: Date;
   delivery_time?: string;
+  status: Status;
   total: number;
   obs?: string;
   regidh: Date;
@@ -67,4 +76,5 @@ export interface IOrderProduct {
 export interface IFilterOrder {
   init_date?: Date;
   final_date?: Date
+  status?: Status;
 }

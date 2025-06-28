@@ -85,6 +85,9 @@ export const filterOrder = async (data: IFilterOrder) => {
     } else if (data.final_date) {
       where.delivery_date = { [Op.lte]: final };
     }
+    if (data.status) {
+      where.status = data.status
+    }
     const ordersFilter = await Order.findAll({
       where,
       include: [

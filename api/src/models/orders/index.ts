@@ -1,5 +1,5 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
-import { IOrder, PaymentMethod } from "../../types";
+import { IOrder, PaymentMethod, Status } from "../../types";
 import { Client } from "../clients";
 import { OrderProducts } from "../orderProducts";
 import { Product } from "../products";
@@ -7,13 +7,14 @@ import { Product } from "../products";
 // Crie uma interface para os valores opcionais, já que o Sequelize lida com inserções de forma especial
 interface IOrderCreationAttributes extends Optional<IOrder, 'order_id'> { }
 
-// Defina o modelo User, agora com tipagem correta, não precisam ser explicitamente definidas dentro do constructor porque o Sequelize cuida dessa parte para você quando você cria ou recupera registros do banco de dados.
+// Defina o modelo Order, agora com tipagem correta, não precisam ser explicitamente definidas dentro do constructor porque o Sequelize cuida dessa parte para você quando você cria ou recupera registros do banco de dados.
 export class Order extends Model<IOrder, IOrderCreationAttributes> implements IOrder {
   public order_id?: number;
   public client_id!: number;
   public payment_method!: PaymentMethod;
   public delivery_date!: Date;
   public delivery_time?: string;
+  public status!: Status;
   public total!: number;
   public regidh!: Date;
   public regiusu!: number;
@@ -64,6 +65,10 @@ export class Order extends Model<IOrder, IOrderCreationAttributes> implements IO
         delivery_time: {
           type: DataTypes.STRING,
           allowNull: true,
+        },
+        status: {
+          type: DataTypes.ENUM(...Object.values(Status)),
+          allowNull: false,
         },
         total: {
           type: DataTypes.NUMBER,

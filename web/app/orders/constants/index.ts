@@ -4,6 +4,8 @@ import { parseISO } from "date-fns";
 
 export const paymentMethods = ["Cartão", "Dinheiro", "Pix"]
 
+export const orderStatus = ["Não Iniciado", "Em Andamento", "Finalizado"]
+
 export const transformedDefaultValues = (order?: IOrder | any, product?: IProduct) => {
   let defaultValues = {}
   if (order && order.order_products) {
@@ -18,9 +20,8 @@ export const transformedDefaultValues = (order?: IOrder | any, product?: IProduc
       })),
       total: order.total,
       payment_method: order.payment_method,
-      delivery_date:
-
-        parseISO(order.delivery_date),
+      status: order.status,
+      delivery_date: parseISO(order.delivery_date),
       delivery_time: order.delivery_time ?? "",
       obs: order.obs ?? null,
     };
@@ -36,6 +37,7 @@ export const transformedDefaultValues = (order?: IOrder | any, product?: IProduc
       ],
       total: 0,
       payment_method: "Pix",
+      status: "Não Iniciado",
       delivery_date: new Date(),
       delivery_time: "",
       obs: null,

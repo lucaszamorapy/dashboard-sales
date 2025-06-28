@@ -34,7 +34,11 @@ import { CircleMinus, Loader2, PencilIcon, PlusCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { paymentMethods, transformedDefaultValues } from "../constants";
+import {
+  orderStatus,
+  paymentMethods,
+  transformedDefaultValues,
+} from "../constants";
 
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { Textarea } from "@/app/components/ui/textarea";
@@ -69,6 +73,7 @@ const formSchema = z.object({
   ),
   total: z.number(),
   payment_method: z.string(),
+  status: z.string(),
   delivery_date: z.date({
     required_error: "A data é obrigatório.",
   }),
@@ -162,6 +167,7 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
         payment_method: data?.payment_method,
         delivery_date: data?.delivery_date,
         delivery_time: data?.delivery_time,
+        status: data?.status,
         total: data?.total,
         obs: data?.obs,
       } as IOrder;
@@ -395,6 +401,35 @@ const UpsertOrder = ({ order, onUpsert }: UpsertOrderProps) => {
                           </SelectTrigger>
                           <SelectContent>
                             {paymentMethods.map((item, index) => (
+                              <SelectItem key={index} value={item}>
+                                {item}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex items-center w-full gap-2">
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Status</FormLabel>
+                      <FormControl>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Selecione um status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {orderStatus.map((item, index) => (
                               <SelectItem key={index} value={item}>
                                 {item}
                               </SelectItem>

@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
 } from "@/app/components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, ListFilterPlus, Loader2 } from "lucide-react";
+import { CalendarIcon, ListFilterPlus, Loader2, X } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -22,7 +22,15 @@ import { ptBR } from "date-fns/locale";
 import { format } from "date-fns";
 import { cn } from "@/app/lib/utils";
 import { filterOrders } from "@/app/_actions/orders/indext";
-import { IOrder } from "@/app/types";
+import { IFilterOrder, IOrder } from "@/app/types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
+import { orderStatus } from "../constants";
 
 interface FilterOrderProps {
   handleFilter: (result: IOrder[]) => void;
@@ -31,6 +39,7 @@ interface FilterOrderProps {
 const dateFilterSchema = z.object({
   init_date: z.date().optional(),
   final_date: z.date().optional(),
+  status: z.string().optional(),
 });
 
 const FilterOrder = ({ handleFilter }: FilterOrderProps) => {
@@ -41,6 +50,7 @@ const FilterOrder = ({ handleFilter }: FilterOrderProps) => {
     defaultValues: {
       init_date: undefined,
       final_date: undefined,
+      status: undefined,
     },
   });
 
@@ -53,7 +63,8 @@ const FilterOrder = ({ handleFilter }: FilterOrderProps) => {
       final_date: data.final_date
         ? format(data.final_date, "yyyy-MM-dd")
         : undefined,
-    };
+      status: data.status ? data.status : undefined,
+    } as IFilterOrder;
     const response = await filterOrders(filter);
     handleFilter(response);
     setLoading(false);
@@ -137,6 +148,37 @@ const FilterOrder = ({ handleFilter }: FilterOrderProps) => {
                   />
                 </PopoverContent>
               </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Status</FormLabel>
+              <FormControl>
+                <div className="flex items-center gap-2">
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Selecione um status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {orderStatus.map((item, index) => (
+                        <SelectItem key={index} value={item}>
+                          {item}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <X
+                    className="cursor-pointer"
+                    onClick={() => form.setValue("status", "")}
+                    size={20}
+                  />
+                </div>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
