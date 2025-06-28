@@ -14,7 +14,7 @@ import {
   PopoverTrigger,
 } from "@/app/components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, ListFilterPlus, Loader2, X } from "lucide-react";
+import { CalendarIcon, ListFilterPlus, Loader2 } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -23,14 +23,9 @@ import { format } from "date-fns";
 import { cn } from "@/app/lib/utils";
 import { filterOrders } from "@/app/_actions/orders/indext";
 import { IFilterOrder, IOrder } from "@/app/types";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+
 import { orderStatus } from "../constants";
+import GenericSelect from "@/app/components/generic-select";
 
 interface FilterOrderProps {
   handleFilter: (result: IOrder[]) => void;
@@ -47,23 +42,20 @@ const FilterOrder = ({ handleFilter }: FilterOrderProps) => {
 
   const form = useForm<z.infer<typeof dateFilterSchema>>({
     resolver: zodResolver(dateFilterSchema),
+    //defaultvalues que controla os valores dos campos
     defaultValues: {
       init_date: undefined,
       final_date: undefined,
-      status: undefined,
+      status: "",
     },
   });
 
   const onSubmit = async (data: z.infer<typeof dateFilterSchema>) => {
     setLoading(true);
     const filter = {
-      init_date: data.init_date
-        ? format(data.init_date, "yyyy-MM-dd")
-        : undefined,
-      final_date: data.final_date
-        ? format(data.final_date, "yyyy-MM-dd")
-        : undefined,
-      status: data.status ? data.status : undefined,
+      init_date: data.init_date ? format(data.init_date, "yyyy-MM-dd") : "",
+      final_date: data.final_date ? format(data.final_date, "yyyy-MM-dd") : "",
+      status: data.status ? data.status : "",
     } as IFilterOrder;
     const response = await filterOrders(filter);
     handleFilter(response);
@@ -159,25 +151,12 @@ const FilterOrder = ({ handleFilter }: FilterOrderProps) => {
             <FormItem className="w-full">
               <FormLabel>Status</FormLabel>
               <FormControl>
-                <div className="flex items-center gap-2">
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Selecione um status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {orderStatus.map((item, index) => (
-                        <SelectItem key={index} value={item}>
-                          {item}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <X
-                    className="cursor-pointer"
-                    onClick={() => form.setValue("status", "")}
-                    size={20}
-                  />
-                </div>
+                <GenericSelect
+                  items={orderStatus}
+                  value={field.value}
+                  onChange={field.onChange}
+                  clearable={true}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

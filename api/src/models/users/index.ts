@@ -66,3 +66,4 @@ export class User extends Model<IUser, IUserCreationAttributes> implements IUser
 
   }
 }
+

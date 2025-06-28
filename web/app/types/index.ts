@@ -48,7 +48,7 @@ export interface IOrder {
 export interface IFilterOrder {
   init_date?: string;
   final_date?: string;
-  status: "Não Iniciado" | "Em Andamento" | "Finalizado" | undefined;
+  status?: "Não Iniciado" | "Em Andamento" | "Finalizado" | undefined;
 }
 
 export interface IOrderProduct {
