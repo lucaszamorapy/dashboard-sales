@@ -10,6 +10,13 @@ import { router } from './routes';
 import { sequelizeDb } from './config';
 
 const app = express();
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+  next();
+});
 app.use(cors());
 app.use(express.json());
 app.use("/api", router);

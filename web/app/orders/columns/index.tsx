@@ -95,9 +95,13 @@ export const getColumns = (
               <span className="flex">
                 {formatDate(order.delivery_date)} às {order.delivery_time}
               </span>
-              <span className="flex">
-                {order.client.street}, {order.client.neighborhood}
-              </span>
+              {order.client.street && order.client.neighborhood ? (
+                <span className="flex">
+                  {order.client.street}, {order.client.neighborhood}
+                </span>
+              ) : (
+                <span>Endereço não informado</span>
+              )}
             </>
           )}
         </div>

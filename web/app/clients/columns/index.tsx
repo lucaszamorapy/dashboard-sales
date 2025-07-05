@@ -41,19 +41,20 @@ export const getColumns = (
   {
     accessorKey: "cep",
     header: "CEP",
+    cell: ({ row: { original: client } }) => client.cep || "CEP não informado",
   },
   {
     accessorKey: "street",
     header: "Endereço",
-    cell: ({ row: { original: client } }) => {
-      return (
+    cell: ({ row: { original: client } }) =>
+      client.street && client.neighborhood ? (
         <div className="flex items-center">
           {client.street}, {client.neighborhood}
         </div>
-      );
-    },
+      ) : (
+        "Endereço não informado"
+      ),
   },
-
   {
     accessorKey: "tel",
     header: "Contato",

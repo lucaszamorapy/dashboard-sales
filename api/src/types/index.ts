@@ -12,9 +12,9 @@ export interface IUser {
 export interface IClient {
   client_id?: number;
   name: string;
-  cep: string;
-  street: string;
-  neighborhood: string;
+  cep?: string;
+  street?: string;
+  neighborhood?: string;
   tel?: string;
   cel?: string;
   regidh: Date;

@@ -4,7 +4,9 @@ import { IProduct } from "../../types";
 
 export const getAllProducts = async () => {
   try {
-    const products = await Product.findAll()
+    const products = await Product.findAll({
+      order: [['name', 'ASC']],
+    })
     return new Message(products, `Total de ${products.length} produto(s) encontrado(s)`);
   } catch (error: any) {
     throw new Error(error.message);

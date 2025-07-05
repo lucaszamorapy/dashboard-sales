@@ -36,15 +36,9 @@ const formSchema = z.object({
     .string()
     .min(1, { message: "Por favor, preencha o nome do cliente." })
     .max(255),
-  cep: z.string().min(1, { message: "Por favor, preencha o CEP." }).max(9),
-  street: z
-    .string()
-    .min(1, { message: "Por favor, preencha a sua rua." })
-    .max(255),
-  neighborhood: z
-    .string()
-    .min(1, { message: "Por favor, preencha o seu bairro." })
-    .max(255),
+  cep: z.string().optional(),
+  street: z.string().max(255).optional(),
+  neighborhood: z.string().max(255).optional(),
   tel: z
     .string()
     .max(15)
@@ -125,12 +119,16 @@ const UpsertClient = ({ client, onUpsert }: UpsertClientProps) => {
   };
 
   const getAddress = async () => {
-    const cep = form.getValues("cep").replace(/\D/g, "");
-    if (cep.length !== 8) return;
+    const cep = form.getValues("cep")?.replace(/\D/g, "");
+    if (cep?.length !== 8) return;
     try {
       const data = await getCep(cep);
-      form.setValue("street", data.logradouro);
-      form.setValue("neighborhood", data.bairro);
+      if (data) {
+        form.setValue("street", data.logradouro ?? "");
+        form.setValue("neighborhood", data.bairro ?? "");
+      } else {
+        console.error("CEP não encontrado.");
+      }
     } catch (error) {
       console.error("Erro ao buscar o CEP:", error);
     }

@@ -4,7 +4,9 @@ import { IClient } from "../../types";
 
 export const getAllClients = async () => {
   try {
-    const clients = await Client.findAll()
+    const clients = await Client.findAll({
+      order: [['name', 'ASC']],
+    })
     return new Message(clients, `Total de ${clients.length} cliente(s) encontrado(s)`);
   } catch (error: any) {
     throw new Error(error.message);

@@ -9,9 +9,9 @@ interface IClientCreationAttributes extends Optional<IClient, 'client_id'> { }
 export class Client extends Model<IClient, IClientCreationAttributes> implements IClient {
   public client_id?: number;
   public name!: string;
-  public cep!: string;
-  public street!: string;
-  public neighborhood!: string;
+  public cep?: string;
+  public street?: string;
+  public neighborhood?: string;
   public tel?: string;
   public cel?: string;
   public regidh!: Date;
@@ -41,15 +41,15 @@ export class Client extends Model<IClient, IClientCreationAttributes> implements
         },
         cep: {
           type: DataTypes.STRING,
-          allowNull: false,
+          allowNull: true,
         },
         street: {
           type: DataTypes.STRING,
-          allowNull: false,
+          allowNull: true,
         },
         neighborhood: {
           type: DataTypes.STRING,
-          allowNull: false,
+          allowNull: true,
         },
         tel: {
           type: DataTypes.STRING,
